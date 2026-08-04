@@ -1,8 +1,30 @@
-# Validation Report — Phase 1: Infrastructure & Base Configuration
+# Validation Report — Phase 1 & Phase 2
 
-> Ngày: 2026-08-05 · Branch: `setup/phase-1-infra-config` · Commits: `7f525d6`, `fbe07f6`, `45499e3`
+> Ngày: 2026-08-05 · Branch: `feat/phase-2-layer0-contracts`
 
-## Kết quả cơ học (100% gate nhị phân)
+## Kết quả cơ học Giai đoạn 2 (Layer 0 Contracts & Core Types)
+
+| Kiểm tra | Kết quả | Chi tiết |
+|---|---|---|
+| `pnpm typecheck` | ✅ PASS | `tsc --noEmit` — 0 lỗi |
+| `pnpm lint` | ✅ PASS | ESLint — 0 lỗi (`@typescript-eslint/consistent-type-imports`, `no-unused-vars` clean) |
+| `pnpm test` | ✅ PASS | Vitest 13/13 tests (6 unit config-schema + 2 unit smoke + 5 contract ipc-payload-shape) |
+| `pnpm build` | ✅ PASS | WXT build `.output/chrome-mv3` xanh |
+| `pnpm arc1` | ✅ PASS | depcruise 0 vi phạm (ARC-1, boundary `src/0_contracts/`) |
+| `pnpm format:check` | ✅ PASS | Prettier 100% clean |
+| CFG-1 secret scan | ✅ PASS | 0 match secret trong `.output/` |
+| TraceId Enforcement (OBS-2 / G1-07) | ✅ PASS | `traceId: string` bắt buộc trên 100% request payloads |
+
+**Ghi chú quyết định (D1–D9):**
+- `ipc-actions.ts` — 4 action hạ tầng theo D2: `LogSink`, `SettingsGet`, `SettingsSet`, `StorageInspect` (dotted value, convention §5).
+- `log-schema.ts` — `LogLevel` 5 mức (DEBUG/INFO/WARN/ERROR/**FATAL**), `timestamp` **ISO-8601 UTC** string (rule §3).
+- `domain-entities.ts` — **KHÔNG tạo** (D3 YAGNI): không có type dùng chung ≥2 file; `LogLevel`/`LogEntry`/`AppError`/`MessageResponse` về đúng file chủ nhà.
+- `ipc-payloads.ts` — `LogSinkRequest.entry` dùng `LogEntry` (validate theo ADR-003 schema).
+- `storage-schema.ts` — `settings.log_level` dùng `LogLevel` (type-safe thay `string`).
+
+**Mức hoàn thành Phase 2: 100%** — Layer 0 contracts hoàn chỉnh, độc lập, sẵn sàng cho Phase 3 (Adapters & Telemetry).
+
+## Kết quả cơ học Giai đoạn 1 (Infrastructure & Base Configuration)
 
 | Kiểm tra | Kết quả | Chi tiết |
 |---|---|---|
@@ -14,17 +36,12 @@
 | `pnpm format:check` | ✅ PASS | Prettier clean |
 | CFG-2 negative test | ✅ PASS | Build đỏ (exit 1, ZodError) khi thiếu `WXT_APP_NAME` |
 | CFG-1 secret scan | ✅ PASS | 0 match secret pattern trong `.output/` |
-| G1-08 hook (PostToolUse) | ✅ PASS | 23 lần log, lần cuối "clean: không có secret trong dist/" |
+| G1-08 hook (PostToolUse) | ✅ PASS | clean: không có secret trong dist/ |
 | G1-01 negative-space | ✅ PASS | 10/5 mục kèm hậu quả |
 
-**Mức hoàn thành: 100%** — mọi gate Phase 1 pass nhị phân, không có workaround.
+## Monitoring / Observability
+- Layer 0 đã sẵn sàng cho Phase 3 telemetry (`LOG_SINK` action, `LogEntry` 7 trường - ADR-003, storage ring buffer schema).
 
-## Monitoring / Observability (Phase 1)
-
-Phase 1 là hạ tầng build/lint — chưa có runtime telemetry. Monitoring thật
-(Log Sink, Ring Buffer, Debug Console, sentry/alert nếu cần) thuộc **Phase 3
-(Telemetry, ADR-003)** theo `temps_phase.md`. Không hardcode config giả trong
-Phase 1 để né gate — bằng chứng thật sẽ đến đúng phase.
 
 ## Bằng chứng pháp lý (nếu cần)
 
