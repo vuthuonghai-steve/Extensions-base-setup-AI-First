@@ -1,0 +1,7 @@
+{
+  "extends": "./.wxt/tsconfig.json", // wxt prepare sinh paths từ alias tự động — 1 nguồn sự thật
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true
+  }
+}
