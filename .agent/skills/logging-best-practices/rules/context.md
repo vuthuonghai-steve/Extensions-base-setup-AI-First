@@ -83,18 +83,18 @@ const wideEvent = {
   // Business context that changes response priority
   user: {
     id: 'user_456',
-    subscription: 'enterprise',        // High-value customer
-    account_age_days: 1247,            // Long-term customer
-    lifetime_value_cents: 4850000,     // $48,500 LTV
+    subscription: 'enterprise', // High-value customer
+    account_age_days: 1247, // Long-term customer
+    lifetime_value_cents: 4850000, // $48,500 LTV
   },
 
   cart: {
-    total_cents: 249900,               // $2,499 order
-    contains_annual_plan: true,        // Recurring revenue at stake
+    total_cents: 249900, // $2,499 order
+    contains_annual_plan: true, // Recurring revenue at stake
   },
 
   feature_flags: {
-    new_payment_flow: true,            // Was new code involved?
+    new_payment_flow: true, // Was new code involved?
   },
 
   error: {

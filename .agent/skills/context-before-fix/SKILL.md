@@ -2,8 +2,8 @@
 name: context-before-fix
 description: 'Skill phân tích scope vấn đề trước khi fix. Trigger khi user/agent có issue, bug, cần sửa, hoặc thêm mới tính năng. Output: scope context document tại Docs/context-to-work/{feature-name}/. KHÔNG sửa code — chỉ document findings.'
 category: problem-analysis
-version: "1.0.0"
-author: "Steve Void Team"
+version: '1.0.0'
+author: 'Steve Void Team'
 tags: [scoping, impact-analysis, context-documentation, vietnamese]
 ---
 
@@ -29,22 +29,26 @@ Skill này **CHỈ DOCUMENT** — không sửa code. Trước khi fix bất kỳ
 ## 4-Step Workflow
 
 ### Step 1: INPUT ACCEPTANCE
+
 - Nhận issue description (text/log/error)
 - Xác định entry point (file/component)
 - Hỏi user để làm rõ nếu cần
 
 ### Step 2: SCOPE DISCOVERY
+
 - Tìm tất cả file liên quan (grep/search_files patterns)
 - Map call chain (ai gọi ai, ai được gọi)
 - Tìm shared dependencies
 
 ### Step 3: IMPACT ANALYSIS
+
 - Tính năng bị ảnh hưởng trực tiếp
 - Tính năng bị ảnh hưởng gián tiếp
 - Data flow bị ảnh hưởng
 - API contracts bị break
 
 ### Step 4: DOCUMENT GENERATION
+
 - Ghi nhận TẤT CẢ findings
 - KHÔNG đưa ra giải pháp fix
 - Lưu vào `Docs/context-to-work/{feature-name}/scope.{YYYY-MM-DD}.md`
@@ -87,16 +91,16 @@ confidence_threshold: 60
 
 confidence_levels:
   above_85:
-    meaning: "Tin chắc findings chính xác"
-    action: "Proceed to generate doc"
-  
+    meaning: 'Tin chắc findings chính xác'
+    action: 'Proceed to generate doc'
+
   60_to_85:
-    meaning: "Khá chắc, có một số uncertainties"
-    action: "Document with uncertainty flags"
-  
+    meaning: 'Khá chắc, có một số uncertainties'
+    action: 'Document with uncertainty flags'
+
   below_60:
-    meaning: "Không chắc chắn"
-    action: "STOP — Ask user for clarification using clarify tool"
+    meaning: 'Không chắc chắn'
+    action: 'STOP — Ask user for clarification using clarify tool'
 ```
 
 ---
@@ -105,10 +109,10 @@ confidence_levels:
 
 ```yaml
 primary_tools:
-  - search_files     # grep patterns để tìm related files
-  - read_file       # inspect actual content
-  - write_file      # generate output document
-  - clarify         # hỏi user khi uncertain
+  - search_files # grep patterns để tìm related files
+  - read_file # inspect actual content
+  - write_file # generate output document
+  - clarify # hỏi user khi uncertain
 
 reasoning:
   - LLM analyze relationships
@@ -122,8 +126,8 @@ reasoning:
 
 ```yaml
 output_contract:
-  path_pattern: "Docs/context-to-work/{feature-name}/scope.{YYYY-MM-DD}.md"
-  
+  path_pattern: 'Docs/context-to-work/{feature-name}/scope.{YYYY-MM-DD}.md'
+
   sections:
     - Problem Summary
     - Entry Point
@@ -135,7 +139,7 @@ output_contract:
     - Evidence
     - Confidence Assessment
     - Open Questions
-  
+
   format: Markdown + YAML (theo know.md standards)
   language: Vietnamese
 ```
@@ -146,13 +150,13 @@ output_contract:
 
 ```yaml
 Tier_1_Mandatory:
-  description: "Load always at boot"
+  description: 'Load always at boot'
   files:
     - SKILL.md
     - knowledge/output-schema.md
 
 Tier_2_Conditional:
-  description: "Load when context requires"
+  description: 'Load when context requires'
   files:
     - knowledge/scoping-patterns.md
     - templates/scope-doc.template
@@ -167,14 +171,14 @@ Tier_2_Conditional:
 guardrails:
   G1_no_code_changes:
     must_not: [edit_source_code, create_branches, run_tests, deploy]
-  
+
   G2_ask_when_uncertain:
-    condition: "confidence < 60%"
-    action: "STOP → clarify with user"
-  
+    condition: 'confidence < 60%'
+    action: 'STOP → clarify with user'
+
   G3_trace_findings:
     must: [verify_with_read_file, link_to_specific_files]
-  
+
   G4_vietnamese_output:
     must: [use_Vietnamese_in_document, use_Vietnamese_in_summary]
 ```
@@ -188,7 +192,7 @@ stop_conditions:
   - Document written to disk at correct path
   - User receives path to scope document
   - User receives summary of findings
-  - Statement: "NO CODE CHANGES — Context ready for fix phase"
+  - Statement: 'NO CODE CHANGES — Context ready for fix phase'
 ```
 
 ---
@@ -197,7 +201,7 @@ stop_conditions:
 
 ```yaml
 large_codebase_strategy:
-  when: "grep/search timeout hoặc >50 results"
+  when: 'grep/search timeout hoặc >50 results'
   action:
     - Ask user to narrow scope
     - Limit search to specific module/feature

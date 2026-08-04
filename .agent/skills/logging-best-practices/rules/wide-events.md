@@ -103,7 +103,7 @@ await fetch('http://downstream-service/endpoint', {
 
 // Service B - extract and use
 const requestId = c.req.header('x-request-id');
-wideEvent.requestId = requestId;  // Same ID links events together
+wideEvent.requestId = requestId; // Same ID links events together
 ```
 
 ### Emit in Finally Block
