@@ -18,15 +18,15 @@ Emitting multiple log lines per request creates noise without value. These scatt
 
 ```typescript
 app.post('/checkout', async (c) => {
-  console.log('Received checkout request');                    // Line 1
-  console.log(`User ID: ${c.get('userId')}`);                  // Line 2
+  console.log('Received checkout request'); // Line 1
+  console.log(`User ID: ${c.get('userId')}`); // Line 2
   const user = await getUser(c.get('userId'));
-  console.log(`User fetched: ${user.email}`);                  // Line 3
+  console.log(`User fetched: ${user.email}`); // Line 3
   const cart = await getCart(user.id);
-  console.log(`Cart fetched: ${cart.items.length} items`);     // Line 4
+  console.log(`Cart fetched: ${cart.items.length} items`); // Line 4
   const payment = await processPayment(cart);
-  console.log(`Payment processed: ${payment.status}`);         // Line 5
-  console.log('Checkout completed successfully');              // Line 6
+  console.log(`Payment processed: ${payment.status}`); // Line 5
+  console.log('Checkout completed successfully'); // Line 6
   return c.json({ orderId: payment.orderId });
 });
 // 6 log lines per request = noise
@@ -58,7 +58,7 @@ Traditional logging captures "known unknowns" - issues you anticipated. But prod
 app.post('/articles', async (c) => {
   const article = await createArticle(c.req.body, user);
   if (!article.published) {
-    console.log('Article created but not published');  // Anticipated issue
+    console.log('Article created but not published'); // Anticipated issue
   }
   return c.json({ article });
 });
@@ -84,7 +84,7 @@ wideEvent.user = {
 
 wideEvent.article = {
   id: article.id,
-  published: article.published,  // Captured even though we didn't anticipate the bug
+  published: article.published, // Captured even though we didn't anticipate the bug
 };
 
 // Now you can query: WHERE article.published = false GROUP BY user.trial

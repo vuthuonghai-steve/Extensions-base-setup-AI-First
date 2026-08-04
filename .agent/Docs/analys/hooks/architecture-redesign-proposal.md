@@ -40,7 +40,7 @@ flowchart TD
     RC4["RC4: Hard-coded Config"] --> P4["Problem: Threshold 120, patterns cứng"]
     RC5["RC5: No Error Handling"] --> P5["Problem: Crash khi data lỗi"]
     RC6["RC6: No Type System"] --> P6["Problem: Dict-based data, implicit contracts"]
-    
+
     P1 --> Impact["⚡ Khó bảo trì, mở rộng, kiểm thử"]
     P2 --> Impact
     P3 --> Impact
@@ -55,15 +55,15 @@ flowchart TD
 
 ### 2.1 Architecture Principles
 
-| Nguyên lý | Áp dụng |
-|---|---|
-| **Single Responsibility** | Mỗi module một nhiệm vụ duy nhất |
-| **Separation of Concerns** | Tách data loading, classification, reporting |
-| **Dependency Inversion** | Core classification logic không phụ thuộc vào input/output format |
-| **Strategy Pattern** | Classification strategy có thể swap (rule-based → ML-based) |
-| **Pipeline Architecture** | Data flow qua các stage rõ ràng: Load → Validate → Classify → Export |
-| **Configurable** | Threshold, patterns, paths từ config file |
-| **Testable by Design** | Mỗi module có thể unit-test độc lập |
+| Nguyên lý                  | Áp dụng                                                              |
+| -------------------------- | -------------------------------------------------------------------- |
+| **Single Responsibility**  | Mỗi module một nhiệm vụ duy nhất                                     |
+| **Separation of Concerns** | Tách data loading, classification, reporting                         |
+| **Dependency Inversion**   | Core classification logic không phụ thuộc vào input/output format    |
+| **Strategy Pattern**       | Classification strategy có thể swap (rule-based → ML-based)          |
+| **Pipeline Architecture**  | Data flow qua các stage rõ ràng: Load → Validate → Classify → Export |
+| **Configurable**           | Threshold, patterns, paths từ config file                            |
+| **Testable by Design**     | Mỗi module có thể unit-test độc lập                                  |
 
 ### 2.2 Module Size Constraints
 
@@ -112,20 +112,20 @@ flowchart TB
 
     ConfigYAML --> Loader
     ConfigYAML --> Classifier
-    
+
     Loader --> Validator
     Validator --> Classifier
     Classifier --> Analyzer
     Analyzer --> Reporter
-    
+
     Classifier --> RuleBased
     Classifier --> TemplateDetector
     Classifier -.-> MLStrategy
-    
+
     Reporter --> JSONOut
     Reporter --> MarkdownOut
     Reporter -.-> CSVOut
-    
+
     MessageModel -.-> Loader
     MessageModel -.-> Classifier
     ClassificationResult -.-> Classifier
@@ -354,6 +354,7 @@ class Pattern(Enum):
 ```
 
 **Lợi ích**:
+
 - Type safety thay vì dict-based (ngăn typo như `result['category']` vs `result['catgeory']`)
 - IDE auto-complete
 - Dễ dàng thêm field mới
@@ -404,11 +405,12 @@ class RuleBasedStrategy:
                 matching_rules.append(rule)
                 if rule.is_terminal:  # short-circuit cho pattern độc quyền
                     break
-        
+
         return self._aggregate_results(message, matching_rules)
 ```
 
 **Lợi ích**:
+
 - Thêm/bớt rule không sửa core engine
 - Mỗi rule có test riêng
 - Confidence scoring tổng hợp từ nhiều rules
@@ -433,12 +435,12 @@ sequenceDiagram
 
     CLI->>Config: load_config("config.yaml")
     Config-->>CLI: Config object
-    
+
     CLI->>Loader: load_all(config.raw_dir)
     Loader->>Loader: scan directories
     Loader->>Loader: parse JSON files
     Loader-->>CLI: List[Message]
-    
+
     CLI->>Validator: validate_all(messages)
     alt Validation errors
         Validator-->>CLI: ValidationReport (warnings + errors)
@@ -446,24 +448,24 @@ sequenceDiagram
     else All valid
         Validator-->>CLI: ✅ OK
     end
-    
+
     CLI->>Classifier: classify_all(messages)
     Classifier->>Classifier: for each message:
     Classifier->>Classifier:   run RuleBasedStrategy
     Classifier->>Classifier:   run TemplateDetector
     Classifier-->>CLI: List[ClassificationResult]
-    
+
     CLI->>Analyzer: analyze(results)
     Analyzer->>Analyzer: compute statistics
     Analyzer->>Analyzer: group by source
     Analyzer->>Analyzer: detect anomalies
     Analyzer-->>CLI: AnalysisReport
-    
+
     CLI->>Reporter: export_summary(report, config.output_dir)
     Reporter->>Reporter: generate JSON
     Reporter->>Reporter: generate Markdown
     Reporter-->>Output: ✅ Files written
-    
+
     CLI-->>CLI: print completion
 ```
 
@@ -475,15 +477,15 @@ stateDiagram-v2
     Raw --> Validated: Validation passed
     Raw --> Error: Malformed / Missing fields
     Error --> [*]: Log & Skip
-    
+
     Validated --> Classifying: Enter pipeline
     Classifying --> RoomListing: length >= threshold
     Classifying --> ShortMessage: length < threshold
-    
+
     RoomListing --> StructuredTemplate: pattern_count >= threshold
     RoomListing --> FreeTextListing: pattern_count < threshold
     RoomListing --> UnknownLong: no patterns match
-    
+
     ShortMessage --> HeartReaction: contains /-heart
     ShortMessage --> FullNotification: FULL + ❌
     ShortMessage --> AdminAnnouncement: startsWith @All
@@ -491,7 +493,7 @@ stateDiagram-v2
     ShortMessage --> RoomCode: matches Pxxx
     ShortMessage --> Axis: matches Trục
     ShortMessage --> UnknownShort: no match
-    
+
     StructuredTemplate --> [*]: Export result
     FreeTextListing --> [*]: Export result
     HeartReaction --> [*]: Export result
@@ -514,25 +516,25 @@ class ClassificationPipeline:
         self.strategy = RuleBasedStrategy(config)
         self.analyzer = MessageAnalyzer()
         self.reporter = ReportGenerator(config)
-    
+
     def run(self) -> PipelineResult:
         # Stage 1: Load
         messages = self.loader.load_all(self.config.raw_dir)
-        
+
         # Stage 2: Validate
         report = self.validator.validate_all(messages)
         if report.has_errors:
             logger.warning(f"Validation: {len(report.errors)} errors")
-        
+
         # Stage 3: Classify
         results = [self.strategy.classify(m) for m in messages]
-        
+
         # Stage 4: Analyze
         analysis = self.analyzer.analyze(results)
-        
+
         # Stage 5: Export
         self.reporter.export_all(results, analysis)
-        
+
         return PipelineResult(
             total=len(messages),
             classified=len(results),
@@ -549,7 +551,7 @@ class ClassificationResult:
     # ... (other fields)
     confidence_score: float  # 0.0 - 1.0
     sub_category_alternatives: list[tuple[SubCategory, float]]
-    
+
 # Scoring logic mới:
 # - pattern_count >= 4: confidence = 0.9 + (pattern_count / 100)
 # - pattern_count = 2-3: confidence = 0.6 + (pattern_count / 10)
@@ -626,6 +628,7 @@ code_python/
 ```
 
 **Giải thích**:
+
 - `src/`: Thư mục source code chính
 - Mỗi module < 200 LOC
 - `rules/` tách riêng để dễ test và mở rộng
@@ -643,12 +646,12 @@ flowchart TB
     subgraph E2E["E2E Tests (5-10 tests)"]
         T4["test_end_to_end.py<br/>Full pipeline run<br/>Compare with expected output"]
     end
-    
+
     subgraph Integration["Integration Tests (10-20 tests)"]
         T3_1["test_pipeline.py<br/>Load → Validate → Classify"]
         T3_2["test_classifier_ensemble.py<br/>Multi-strategy orchestration"]
     end
-    
+
     subgraph Unit["Unit Tests (100+ tests)"]
         T2_1["test_rules.py<br/>Mỗi rule ~5 test cases<br/>Biên, normal, edge"]
         T2_2["test_template.py<br/>3 templates x 5 cases"]
@@ -662,15 +665,15 @@ flowchart TB
 
 ### 8.2 Test Coverage Targets
 
-| Module | Coverage Target | Ghi chú |
-|---|---|---|
-| `models.py` | 100% | Pure data classes — dễ test nhất |
-| `classifier/` | 95%+ | Core business logic — quan trọng nhất |
-| `loader.py` | 90%+ | Input handling, edge cases |
-| `validator.py` | 95%+ | Validation rules |
-| `analyzer.py` | 85%+ | Statistics calculation |
-| `reporter.py` | 85%+ | Output format correctness |
-| `pipeline.py` | 80%+ | Integration test |
+| Module         | Coverage Target | Ghi chú                               |
+| -------------- | --------------- | ------------------------------------- |
+| `models.py`    | 100%            | Pure data classes — dễ test nhất      |
+| `classifier/`  | 95%+            | Core business logic — quan trọng nhất |
+| `loader.py`    | 90%+            | Input handling, edge cases            |
+| `validator.py` | 95%+            | Validation rules                      |
+| `analyzer.py`  | 85%+            | Statistics calculation                |
+| `reporter.py`  | 85%+            | Output format correctness             |
+| `pipeline.py`  | 80%+            | Integration test                      |
 
 ### 8.3 Test Data Strategy
 
@@ -700,26 +703,26 @@ gantt
     title Migration Roadmap
     dateFormat  YYYY-MM-DD
     axisFormat  %d/%m
-    
+
     section Phase 1: Foundation
     Tạo cấu trúc thư mục & models      :p1a, 2026-08-01, 2d
     Implement config management         :p1b, after p1a, 1d
     Implement domain models + enums     :p1c, after p1a, 1d
     Implement interfaces (ABC)          :p1d, after p1a, 1d
-    
+
     section Phase 2: Core Engine
     Implement DataLoader                :p2a, after p1c, 2d
     Implement DataValidator             :p2b, after p1c, 1d
     Implement Rule Base                 :p2c, after p1c, 3d
     Implement Classification Engine     :p2d, after p2c, 2d
     Implement Template Detector         :p2e, after p2c, 2d
-    
+
     section Phase 3: Output
     Implement Analyzer                  :p3a, after p2d, 2d
     Implement Reporter (JSON + MD)      :p3b, after p2d, 2d
     Implement Pipeline Orchestrator     :p3c, after p3b, 1d
     Implement CLI entry point           :p3d, after p3c, 1d
-    
+
     section Phase 4: Testing
     Unit tests - Models                 :p4a, 2026-08-01, 2d
     Unit tests - Classification rules   :p4b, after p2c, 3d
@@ -736,43 +739,43 @@ flowchart TD
     Independent -->|"✅ Yes"| A["Task A: models.py"]
     Independent -->|"✅ Yes"| B["Task B: config.py"]
     Independent -->|"✅ Yes"| C["Task C: interfaces.py"]
-    
+
     A --> Phase2A["Phase 2A: Loader + Validator"]
     B --> Phase2B["Phase 2B: Classifier Rules"]
     C --> Phase2C["Phase 2C: Reporter + Analyzer"]
-    
+
     Phase2A --> Phase3["Phase 3: Pipeline Integration"]
     Phase2B --> Phase3
     Phase2C --> Phase3
-    
+
     Phase3 --> Phase4["Phase 4: Testing"]
 ```
 
 ### 9.3 Risk Mitigation
 
-| Risk | Mitigation |
-|---|---|
-| **Regression** | Tạo test snapshot từ output hiện tại, verify sau migration |
-| **Mất patterns** | Tất cả patterns hiện tại đều được migrate qua rule registry |
-| **Performance** | Dùng pipeline batch processing, profile trước khi optimize |
+| Risk                     | Mitigation                                                        |
+| ------------------------ | ----------------------------------------------------------------- |
+| **Regression**           | Tạo test snapshot từ output hiện tại, verify sau migration        |
+| **Mất patterns**         | Tất cả patterns hiện tại đều được migrate qua rule registry       |
+| **Performance**          | Dùng pipeline batch processing, profile trước khi optimize        |
 | **Incomplete migration** | Chạy song song: script cũ vẫn hoạt động trong quá trình migration |
 
 ---
 
 ## 10. So Sánh: Hiện Tại vs Đề Xuất
 
-| Tiêu chí | Hiện tại (Monolithic) | Đề xuất (Modular) |
-|---|---|---|
-| **Số files** | 1 | 15-20 |
-| **LOC trung bình/file** | 449 | ~60-150 |
-| **Test coverage** | 0% | 90%+ |
-| **Config** | Hard-coded | YAML file |
-| **Error handling** | None | Try-catch + validation |
-| **Extensibility** | Sửa code gốc | Thêm rule/strategy |
-| **Type safety** | Dict-based | Dataclass + Enum |
-| **Separate I/O** | No | Yes (Dependency inversion) |
-| **Multiple formats** | JSON only | JSON + MD + CSV (extensible) |
-| **CLI** | None | `python run_pipeline.py` |
+| Tiêu chí                | Hiện tại (Monolithic) | Đề xuất (Modular)            |
+| ----------------------- | --------------------- | ---------------------------- |
+| **Số files**            | 1                     | 15-20                        |
+| **LOC trung bình/file** | 449                   | ~60-150                      |
+| **Test coverage**       | 0%                    | 90%+                         |
+| **Config**              | Hard-coded            | YAML file                    |
+| **Error handling**      | None                  | Try-catch + validation       |
+| **Extensibility**       | Sửa code gốc          | Thêm rule/strategy           |
+| **Type safety**         | Dict-based            | Dataclass + Enum             |
+| **Separate I/O**        | No                    | Yes (Dependency inversion)   |
+| **Multiple formats**    | JSON only             | JSON + MD + CSV (extensible) |
+| **CLI**                 | None                  | `python run_pipeline.py`     |
 
 ---
 
@@ -781,14 +784,14 @@ flowchart TD
 ```yaml
 # config.yaml
 pipeline:
-  raw_dir: "../Raw"
-  output_dir: "../result"
-  
+  raw_dir: '../Raw'
+  output_dir: '../result'
+
 classification:
   length_threshold: 120
   template_pattern_threshold: 4
   confidence_threshold: 0.5
-  
+
   patterns:
     long_message:
       - name: has_ma_code
@@ -801,7 +804,7 @@ classification:
         regex: '[🏠🕌🏡]'
         weight: 0.8
       # ... more patterns
-    
+
     short_message:
       - name: heart_reaction
         regex: '/-heart'
@@ -813,10 +816,11 @@ classification:
 
 logging:
   level: INFO
-  format: "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
+  format: '%(asctime)s | %(levelname)-8s | %(name)s | %(message)s'
 ```
 
 **Lợi ích**:
+
 - Thay đổi threshold/thêm pattern mà không cần sửa code
 - Multi-environment (dev/staging/prod)
 - Version control-friendly
@@ -838,5 +842,5 @@ Kiến trúc đề xuất giải quyết triệt để 6 root causes đã xác �
 
 ---
 
-*Tài liệu được tạo từ phân tích chi tiết codebase và data samples*
-*Kết hợp context-before-fix skill + mermaid-diagrams skill*
+_Tài liệu được tạo từ phân tích chi tiết codebase và data samples_
+_Kết hợp context-before-fix skill + mermaid-diagrams skill_

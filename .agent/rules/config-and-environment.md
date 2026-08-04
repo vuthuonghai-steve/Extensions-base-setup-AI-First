@@ -1,7 +1,7 @@
 ---
 trigger: glob
-globs: ["src/0_contracts/config-schema.ts", "src/2_platform_adapters/config/**", "wxt.config.ts"]
-description: "Quy chuẩn kiến trúc Cấu hình (Config) & Biến Môi trường trong Chrome Extension MV3 (WXT)"
+globs: ['src/0_contracts/config-schema.ts', 'src/2_platform_adapters/config/**', 'wxt.config.ts']
+description: 'Quy chuẩn kiến trúc Cấu hình (Config) & Biến Môi trường trong Chrome Extension MV3 (WXT)'
 ---
 
 # ⚙️ Rule: Configuration & Environment Management
@@ -26,12 +26,12 @@ Rule này quy định kiến trúc config, bảo mật secret và quản lý bi�
 
 ## 2. Bảng 4 loại Config & nơi lưu đúng
 
-| Loại config | Nơi lưu đúng | Lý do |
-|---|---|---|
-| Config public (feature flag, endpoint URL) | `.env` build-time qua `import.meta.env` | Không nhạy cảm |
-| API key bên thứ 3 (bạn trả tiền) | ❌ Không bao giờ trong extension — bắt buộc Backend Proxy giữ key | Nhét vào = phát key miễn phí cho mọi người dùng |
-| Token của chính người dùng (họ tự nhập) | `chrome.storage.local`, encrypt nếu cần | Runtime config, khác biến build-time |
-| Config runtime người dùng chỉnh | `chrome.storage.sync`/`local` | Preference, không phải secret |
+| Loại config                                | Nơi lưu đúng                                                      | Lý do                                           |
+| ------------------------------------------ | ----------------------------------------------------------------- | ----------------------------------------------- |
+| Config public (feature flag, endpoint URL) | `.env` build-time qua `import.meta.env`                           | Không nhạy cảm                                  |
+| API key bên thứ 3 (bạn trả tiền)           | ❌ Không bao giờ trong extension — bắt buộc Backend Proxy giữ key | Nhét vào = phát key miễn phí cho mọi người dùng |
+| Token của chính người dùng (họ tự nhập)    | `chrome.storage.local`, encrypt nếu cần                           | Runtime config, khác biến build-time            |
+| Config runtime người dùng chỉnh            | `chrome.storage.sync`/`local`                                     | Preference, không phải secret                   |
 
 Phân loại bắt buộc trước khi viết bất kỳ config nào: biến thuộc nhóm nào trong bảng trên → mới quyết định nơi lưu. Không có nhóm thứ 5. ℹ️ Kiến thức — không có hook.
 
@@ -39,11 +39,11 @@ Phân loại bắt buộc trước khi viết bất kỳ config nào: biến thu
 
 ## 3. Vị trí file bắt buộc
 
-| File | Vai trò | Ràng buộc |
-|---|---|---|
-| `src/0_contracts/config-schema.ts` | Zod schema validate `.env` lúc build; nguồn định nghĩa biến bắt buộc | Layer 0 — không phụ thuộc ai, **cấm import `chrome.*`** |
-| `src/2_platform_adapters/config/build-config.ts` | Chỉ đọc `import.meta.env` build-time, config public | **Tĩnh** — giá trị khóa tại lúc build, không đổi lúc runtime |
-| `src/2_platform_adapters/config/runtime-config-adapter.ts` | Bọc `chrome.storage` 1-1, config **động** | Fallback về build-config khi storage trống/hỏng |
+| File                                                       | Vai trò                                                              | Ràng buộc                                                    |
+| ---------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `src/0_contracts/config-schema.ts`                         | Zod schema validate `.env` lúc build; nguồn định nghĩa biến bắt buộc | Layer 0 — không phụ thuộc ai, **cấm import `chrome.*`**      |
+| `src/2_platform_adapters/config/build-config.ts`           | Chỉ đọc `import.meta.env` build-time, config public                  | **Tĩnh** — giá trị khóa tại lúc build, không đổi lúc runtime |
+| `src/2_platform_adapters/config/runtime-config-adapter.ts` | Bọc `chrome.storage` 1-1, config **động**                            | Fallback về build-config khi storage trống/hỏng              |
 
 - Config tĩnh (public, build-time) đi qua `build-config.ts`; config động (người dùng chỉnh, token tự nhập) đi qua `runtime-config-adapter.ts`.
 - Không tạo file config nào ngoài 3 file trên. ℹ️ Kiến thức vị trí file — không có hook.

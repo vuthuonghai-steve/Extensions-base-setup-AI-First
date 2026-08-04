@@ -86,7 +86,7 @@ Markdown phù hợp khi mục tiêu là giúp người và agent hiểu bối c�
      > Cảnh báo rủi ro cao có thể gây mất mát dữ liệu hoặc vi phạm bảo mật.
 
 3. **Code & Diffs (Khối mã và So sánh thay đổi)**:
-   - Chỉ định ngôn ngữ rõ ràng cho các khối code (ví dụ: ````typescript ... ````).
+   - Chỉ định ngôn ngữ rõ ràng cho các khối code (ví dụ: `typescript ... `).
    - Sử dụng khối `diff` để mô tả trực quan các thay đổi của code. Đánh dấu dòng thêm mới bằng `+` và dòng bị xóa/thay thế bằng `-`:
      ```diff
      - old_function_name()
@@ -103,7 +103,6 @@ Markdown phù hợp khi mục tiêu là giúp người và agent hiểu bối c�
 
 6. **Carousels (Trình diễn slide)**:
    - Sử dụng khối mã ```carousel để nhóm các nội dung liên quan (ảnh mockup, diff code, sơ đồ) cần hiển thị tuần tự. Phân tách các slide bằng comment HTML `<!-- slide -->`.
-
 
 ### 3.2 YAML
 
@@ -200,28 +199,28 @@ Một hệ tài liệu tốt nên được phân tầng theo mức độ luôn c
 ```yaml
 knowledge_layers:
   L0_anchor_rules:
-    purpose: "Luật nền, mục tiêu, giới hạn tuyệt đối, anti-goals."
-    load_policy: "always"
-    location: "root guide: CLAUDE.md, AGENT.md, SYSTEM.md"
-    preferred_format: "Markdown ngắn + YAML ngắn + XML boundary"
+    purpose: 'Luật nền, mục tiêu, giới hạn tuyệt đối, anti-goals.'
+    load_policy: 'always'
+    location: 'root guide: CLAUDE.md, AGENT.md, SYSTEM.md'
+    preferred_format: 'Markdown ngắn + YAML ngắn + XML boundary'
 
   L1_working_policy:
-    purpose: "Quy ước làm việc, coding rules, review rules, tool rules, output contract."
-    load_policy: "frequent_or_scoped"
-    location: "docs/agent/policies hoặc .claude/rules"
-    preferred_format: "YAML + Markdown ngắn"
+    purpose: 'Quy ước làm việc, coding rules, review rules, tool rules, output contract.'
+    load_policy: 'frequent_or_scoped'
+    location: 'docs/agent/policies hoặc .claude/rules'
+    preferred_format: 'YAML + Markdown ngắn'
 
   L2_domain_context:
-    purpose: "Kiến trúc, domain glossary, data flow, ADR, subsystem notes."
-    load_policy: "on_demand"
-    location: "docs/architecture, docs/domains, docs/runbooks"
-    preferred_format: "Markdown chủ đạo, có YAML snippets khi cần"
+    purpose: 'Kiến trúc, domain glossary, data flow, ADR, subsystem notes.'
+    load_policy: 'on_demand'
+    location: 'docs/architecture, docs/domains, docs/runbooks'
+    preferred_format: 'Markdown chủ đạo, có YAML snippets khi cần'
 
   L3_evidence_examples:
-    purpose: "Spec, ticket, logs, examples, fixtures, reference docs."
-    load_policy: "task_specific_only"
-    location: "specs, examples, tickets, tmp/context"
-    preferred_format: "XML wrapper + Markdown/YAML bên trong"
+    purpose: 'Spec, ticket, logs, examples, fixtures, reference docs.'
+    load_policy: 'task_specific_only'
+    location: 'specs, examples, tickets, tmp/context'
+    preferred_format: 'XML wrapper + Markdown/YAML bên trong'
 ```
 
 Luật vận hành: root guide chỉ nên chứa L0 và phần cô đặc nhất của L1. L2 và L3 phải được tách để nạp theo task.
@@ -235,52 +234,52 @@ Các ngưỡng dưới đây là vùng vận hành thực tế, không phải gi
 ```yaml
 token_budget_by_layer:
   L0_anchor_rules:
-    good: "150-400 tokens"
-    warning: "500-700 tokens"
-    split_when: ">700 tokens"
+    good: '150-400 tokens'
+    warning: '500-700 tokens'
+    split_when: '>700 tokens'
 
   L1_working_policy:
-    good: "400-1200 tokens"
-    warning: "1200-2000 tokens"
-    split_when: ">2000 tokens"
+    good: '400-1200 tokens'
+    warning: '1200-2000 tokens'
+    split_when: '>2000 tokens'
 
   L2_domain_context:
-    good: "600-2500 tokens"
-    warning: "2500-5000 tokens"
-    split_when: ">5000 tokens"
+    good: '600-2500 tokens'
+    warning: '2500-5000 tokens'
+    split_when: '>5000 tokens'
 
   L3_evidence_examples:
-    good: "300-2000 tokens"
-    warning: "2000-6000 tokens"
-    split_when: ">6000 tokens"
+    good: '300-2000 tokens'
+    warning: '2000-6000 tokens'
+    split_when: '>6000 tokens'
 ```
 
 ```yaml
 token_budget_by_format:
   markdown_section:
-    light: "100-400 tokens"
-    medium: "400-900 tokens"
-    heavy: "900-1800 tokens"
-    overloaded: ">1800 tokens"
+    light: '100-400 tokens'
+    medium: '400-900 tokens'
+    heavy: '900-1800 tokens'
+    overloaded: '>1800 tokens'
 
   yaml_block:
-    light: "80-300 tokens"
-    medium: "300-700 tokens"
-    heavy: "700-1200 tokens"
-    overloaded: ">1200 tokens"
+    light: '80-300 tokens'
+    medium: '300-700 tokens'
+    heavy: '700-1200 tokens'
+    overloaded: '>1200 tokens'
 
   xml_block:
-    light: "50-250 tokens"
-    medium: "250-800 tokens"
-    heavy: "800-1500 tokens"
-    overloaded: ">1500 tokens"
+    light: '50-250 tokens'
+    medium: '250-800 tokens'
+    heavy: '800-1500 tokens'
+    overloaded: '>1500 tokens'
 
   root_guide_total:
-    excellent: "300-900 tokens"
-    good: "900-1800 tokens"
-    warning: "1800-3000 tokens"
-    heavy: "3000-5000 tokens"
-    overloaded: ">5000 tokens"
+    excellent: '300-900 tokens'
+    good: '900-1800 tokens'
+    warning: '1800-3000 tokens'
+    heavy: '3000-5000 tokens'
+    overloaded: '>5000 tokens'
 ```
 
 Nếu root guide vượt 1800–3000 tokens, cần kiểm tra xem nó có đang chứa quá nhiều domain context, examples hoặc prose không. Nếu vượt 5000 tokens, gần như chắc chắn cần tái cấu trúc thành nhiều lớp.
@@ -289,18 +288,19 @@ Nếu root guide vượt 1800–3000 tokens, cần kiểm tra xem nó có đang 
 
 Token không phải là byte hay ký tự, và không có tỷ lệ quy đổi cố định 1:1. Tuy nhiên, có thể sử dụng bảng tham chiếu sau để ước lượng dung lượng:
 
-| Tokens | Ngôn ngữ | Ký tự (ước tính) | Bytes (ASCII/UTF-8) | Bits |
-| :--- | :--- | :--- | :--- | :--- |
-| **100** | Tiếng Anh | ~400 | ~400 | ~3,200 |
-| | Tiếng Việt | 300 - 500 | 300 - 500 | 2,400 - 4,000 |
-| **500** | Tiếng Anh | ~2,000 | ~2,000 | ~16,000 |
-| | Tiếng Việt | 1,500 - 2,500 | 1,500 - 2,500 | 12,000 - 20,000 |
-| **700** | Tiếng Anh | ~2,800 | ~2,800 | ~22,400 |
-| | Tiếng Việt | 2,100 - 3,500 | 2,100 - 3,500 | 16,800 - 28,000 |
-| **1,000** | Tiếng Anh | ~4,000 | ~4,000 | ~32,000 |
-| | Tiếng Việt | 3,000 - 5,000 | 3,000 - 5,000 | 24,000 - 40,000 |
+| Tokens    | Ngôn ngữ   | Ký tự (ước tính) | Bytes (ASCII/UTF-8) | Bits            |
+| :-------- | :--------- | :--------------- | :------------------ | :-------------- |
+| **100**   | Tiếng Anh  | ~400             | ~400                | ~3,200          |
+|           | Tiếng Việt | 300 - 500        | 300 - 500           | 2,400 - 4,000   |
+| **500**   | Tiếng Anh  | ~2,000           | ~2,000              | ~16,000         |
+|           | Tiếng Việt | 1,500 - 2,500    | 1,500 - 2,500       | 12,000 - 20,000 |
+| **700**   | Tiếng Anh  | ~2,800           | ~2,800              | ~22,400         |
+|           | Tiếng Việt | 2,100 - 3,500    | 2,100 - 3,500       | 16,800 - 28,000 |
+| **1,000** | Tiếng Anh  | ~4,000           | ~4,000              | ~32,000         |
+|           | Tiếng Việt | 3,000 - 5,000    | 3,000 - 5,000       | 24,000 - 40,000 |
 
 **Lưu ý kỹ thuật:**
+
 - **Tiếng Anh:** Trung bình 1 token ≈ 4 ký tự.
 - **Tiếng Việt:** Dao động mạnh (thường 3-5 ký tự/token) tùy cách viết, từ ghép, dấu và ký tự đặc biệt.
 - **Dung lượng:** 1 ký tự ≈ 1 byte (ASCII). Với tiếng Việt có dấu, UTF-8 có thể dùng 2-4 bytes cho một số ký tự, nên số byte thực tế thường lớn hơn số ký tự.
@@ -356,13 +356,13 @@ output_contract:
 
 ```yaml
 load_when_needed:
-  output_format_rules: ".claude/rules/output-format.md"
-  backend_rules: ".claude/rules/backend.md"
-  frontend_rules: ".claude/rules/frontend.md"
-  testing_policy: "docs/agent/test-policy.yaml"
-  architecture_overview: "docs/architecture/overview.md"
-  domain_docs: "docs/domains/"
-  examples: "docs/examples/"
+  output_format_rules: '.claude/rules/output-format.md'
+  backend_rules: '.claude/rules/backend.md'
+  frontend_rules: '.claude/rules/frontend.md'
+  testing_policy: 'docs/agent/test-policy.yaml'
+  architecture_overview: 'docs/architecture/overview.md'
+  domain_docs: 'docs/domains/'
+  examples: 'docs/examples/'
 ```
 
 ## Interaction Protocol
@@ -417,34 +417,34 @@ Phân bổ mặc định:
 ```yaml
 document_distribution:
   root_guide:
-    role: "control + navigation"
-    content: "mission, hard rules, priority order, loading map"
-    format: "hybrid markdown/yaml/xml"
+    role: 'control + navigation'
+    content: 'mission, hard rules, priority order, loading map'
+    format: 'hybrid markdown/yaml/xml'
 
   policy_files:
-    role: "repeatable behavioral rules"
-    content: "coding policy, testing policy, review policy"
-    format: "yaml or structured markdown"
+    role: 'repeatable behavioral rules'
+    content: 'coding policy, testing policy, review policy'
+    format: 'yaml or structured markdown'
 
   architecture_docs:
-    role: "system understanding"
-    content: "module map, data flow, runtime model, ADR summary"
-    format: "markdown"
+    role: 'system understanding'
+    content: 'module map, data flow, runtime model, ADR summary'
+    format: 'markdown'
 
   domain_docs:
-    role: "business/domain semantics"
-    content: "entities, workflows, edge cases, glossary"
-    format: "markdown + tables + snippets"
+    role: 'business/domain semantics'
+    content: 'entities, workflows, edge cases, glossary'
+    format: 'markdown + tables + snippets'
 
   task_specs:
-    role: "current task requirements"
-    content: "task, context, acceptance criteria, constraints"
-    format: "xml-wrapped markdown/yaml"
+    role: 'current task requirements'
+    content: 'task, context, acceptance criteria, constraints'
+    format: 'xml-wrapped markdown/yaml'
 
   examples:
-    role: "pattern retrieval"
-    content: "good/bad examples, fixtures, failure cases"
-    format: "markdown code blocks, optional xml wrapper"
+    role: 'pattern retrieval'
+    content: 'good/bad examples, fixtures, failure cases'
+    format: 'markdown code blocks, optional xml wrapper'
 ```
 
 ---
@@ -633,13 +633,13 @@ definition_of_done:
 
 ```yaml
 core_summary:
-  markdown: "Giải thích và truyền đạt bối cảnh."
-  yaml: "Mã hóa luật, checklist, constraints và output contract."
-  xml_like_tags: "Tạo ranh giới giữa instruction, context, examples và input."
-  root_guide: "Giữ luật nền và bản đồ nạp context, không làm kho tri thức."
-  domain_docs: "Chỉ nạp khi task cần."
-  examples: "Để riêng, dùng cho retrieval hoặc đối chiếu pattern."
-  best_architecture: "Hybrid format + layered documentation + on-demand context loading."
+  markdown: 'Giải thích và truyền đạt bối cảnh.'
+  yaml: 'Mã hóa luật, checklist, constraints và output contract.'
+  xml_like_tags: 'Tạo ranh giới giữa instruction, context, examples và input.'
+  root_guide: 'Giữ luật nền và bản đồ nạp context, không làm kho tri thức.'
+  domain_docs: 'Chỉ nạp khi task cần.'
+  examples: 'Để riêng, dùng cho retrieval hoặc đối chiếu pattern.'
+  best_architecture: 'Hybrid format + layered documentation + on-demand context loading.'
 ```
 
 Câu hỏi thiết kế đúng không phải là “format nào mạnh nhất”, mà là:

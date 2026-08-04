@@ -1,0 +1,11 @@
+node_modules/
+.wxt/
+.output/
+dist/
+coverage/
+Docs/
+.agent/
+.claude/
+.omc/
+.omo/
+pnpm-lock.yaml

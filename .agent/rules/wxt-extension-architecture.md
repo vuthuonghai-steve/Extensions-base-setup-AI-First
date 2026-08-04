@@ -1,7 +1,7 @@
 ---
 trigger: glob
-description: "Quy chuẩn kiến trúc WXT Chrome Extension MV3: vòng đời Service Worker, engine entrypoints, content worlds, giao tiếp IPC tại dự án Chrome Extension MV3 (WXT)"
-globs: ["src/0_contracts/**", "src/1_engine/**", "src/2_platform_adapters/ipc/**", "wxt.config.ts"]
+description: 'Quy chuẩn kiến trúc WXT Chrome Extension MV3: vòng đời Service Worker, engine entrypoints, content worlds, giao tiếp IPC tại dự án Chrome Extension MV3 (WXT)'
+globs: ['src/0_contracts/**', 'src/1_engine/**', 'src/2_platform_adapters/ipc/**', 'wxt.config.ts']
 ---
 
 # 🧩 Rule: WXT Chrome Extension Architecture — Chrome Extension MV3 (WXT)
@@ -19,6 +19,7 @@ Rule này tự động kích hoạt khi làm việc với contracts, engine entr
 5. [Communication Pattern (IPC)](#5)
 
 <a name="1"></a>
+
 ## 1. Lifecycle & Service Worker (MV3)
 
 - `1_engine/background/` chạy như một Chrome Manifest V3 Service Worker:
@@ -29,6 +30,7 @@ Rule này tự động kích hoạt khi làm việc với contracts, engine entr
 - `1_engine/` là nơi **DUY NHẤT** chứa `defineBackground` / `defineContentScript` — chỉ **Register & Listen**, tuyệt đối không tính toán hay render phức tạp. Business logic nằm ở `3_modules/`. ⚠️ Còn soft — chưa có hook.
 
 <a name="2"></a>
+
 ## 2. Rule "WXT chỉ là Shell — Business nằm ở Core TypeScript"
 
 - `1_engine/` chỉ chứa mã bootstrap của WXT (Background SW, Content Scripts, Offscreen, UI pages). **Cấm nhồi business logic vào engine.** ⚠️ Còn soft — chưa có hook.
@@ -37,6 +39,7 @@ Rule này tự động kích hoạt khi làm việc với contracts, engine entr
 - `3_modules/` 100% Pure TypeScript — không import `chrome`/`document`/`window`. ✅ Cơ học hóa — Hook **G1-06** `gate_arch_boundary.py` (chrome_regex + dom_regex, deny lúc ghi file).
 
 <a name="3"></a>
+
 ## 3. Cấu trúc 1_engine/background
 
 ```txt
@@ -59,6 +62,7 @@ Rule này tự động kích hoạt khi làm việc với contracts, engine entr
 - `keep-alive.ts` dùng Alarm pattern né việc SW bị idle-kill giữa chừng. ℹ️ Kiến thức.
 
 <a name="4"></a>
+
 ## 4. Content Worlds & Offscreen
 
 Content Script tách vật lý 2 world vì đây là 2 JS realm khác nhau với quyền hạn đối lập:
@@ -69,6 +73,7 @@ Content Script tách vật lý 2 world vì đây là 2 JS realm khác nhau với
 - `1_engine/ui-pages/` — chỉ chứa `index.html` của popup/sidepanel/options/debug-console (UI thật ở `4_presentation/`). ℹ️ Kiến thức.
 
 <a name="5"></a>
+
 ## 5. Communication Pattern (IPC)
 
 - **Discriminated Union** tại `0_contracts/ipc-actions.ts` (Enum tên toàn bộ message action) — ℹ️ Kiến thức:
@@ -85,9 +90,7 @@ Content Script tách vật lý 2 world vì đây là 2 JS realm khác nhau với
 - Phản hồi qua message bus theo định dạng **`MessageResponse<T>`** — ℹ️ Kiến thức:
 
   ```typescript
-  type MessageResponse<T> =
-    | { ok: true; data: T }
-    | { ok: false; error: AppError };
+  type MessageResponse<T> = { ok: true; data: T } | { ok: false; error: AppError };
   ```
 
 - `2_platform_adapters/ipc/sender.ts` — bắt buộc **timeout + retry** (SW "ngủ" → message đầu dễ bị mất, không fail âm thầm). ⚠️ Còn soft — chưa có hook.

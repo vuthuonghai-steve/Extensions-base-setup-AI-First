@@ -11,6 +11,7 @@
 Scope Context Document là tài liệu **CHỈ ĐỌC** — cung cấp context đầy đủ cho việc fix sau. Tài liệu này **KHÔNG SỬA CODE**.
 
 **Nguyên tắc**:
+
 - Ghi nhận TẤT CẢ findings
 - Không đưa ra giải pháp fix
 - Dùng cho human review hoặc agent tiếp theo
@@ -37,9 +38,9 @@ must_not:
 
 ```yaml
 scope_definition:
-  entry_point: "File/component bắt đầu"
-  problem_area: "Khu vực bị ảnh hưởng"
-  boundary: "Giới hạn scope"
+  entry_point: 'File/component bắt đầu'
+  problem_area: 'Khu vực bị ảnh hưởng'
+  boundary: 'Giới hạn scope'
 
 impact_mapping:
   direct_impact:
@@ -50,13 +51,14 @@ impact_mapping:
     functions: []
 
 output_contract:
-  path: "Docs/context-to-work/{feature-name}/scope.{YYYY-MM-DD}.md"
+  path: 'Docs/context-to-work/{feature-name}/scope.{YYYY-MM-DD}.md'
   format: Markdown + YAML
 ```
 
 ### L2 — Domain Context (Kiến thức nghiệp vụ)
 
 Markdown với các sections:
+
 - Problem Description (mô tả vấn đề)
 - Entry Point Analysis (phân tích điểm vào)
 - Call Chain ( chuỗi gọi)
@@ -86,38 +88,53 @@ Markdown với các sections:
 ---
 
 ## §1: Problem Summary
+
 {Mô tả ngắn gọn vấn đề}
 
 ## §2: Entry Point
+
 {File/component bắt đầu}
 
 ## §3: Scope Definition
+
 ### 3.1 Problem Area
+
 ### 3.2 Boundary
 
 ## §4: Impact Analysis
+
 ### 4.1 Direct Impact
+
 ### 4.2 Indirect Impact
 
 ## §5: Call Chain
+
 {Mermaid diagram hoặc markdown list}
 
 ## §6: Data Flow
+
 ### 6.1 Input
+
 ### 6.2 Output
+
 ### 6.3 Dependencies
 
 ## §7: Affected Components
+
 ### 7.1 Files
+
 ### 7.2 Functions/APIs
 
 ## §8: Evidence
+
 <evidence> blocks
 
 ## §9: Confidence Assessment
+
 - Overall Confidence: {X}%
 
 ## §10: Open Questions
+
 - Items cần làm rõ
 
 ---
@@ -134,16 +151,16 @@ confidence_threshold: 60
 
 confidence_levels:
   high_above_85:
-    meaning: "Tin chắc findings chính xác"
-    action: "Proceed to generate doc"
-  
+    meaning: 'Tin chắc findings chính xác'
+    action: 'Proceed to generate doc'
+
   medium_60_to_85:
-    meaning: "Khá chắc, có một số uncertainties"
-    action: "Document with uncertainty flags"
-  
+    meaning: 'Khá chắc, có một số uncertainties'
+    action: 'Document with uncertainty flags'
+
   low_below_60:
-    meaning: "Không chắc chắn"
-    action: "STOP — Ask user for clarification"
+    meaning: 'Không chắc chắn'
+    action: 'STOP — Ask user for clarification'
 ```
 
 ---

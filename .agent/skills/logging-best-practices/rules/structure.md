@@ -42,16 +42,18 @@ logger.info({ event: 'checkout_completed', orderId });
 ```
 
 **Benefits:**
+
 - Consistent log format across all modules
 - Environment context automatically included
 - Single place to change log level or destination
 - No risk of misconfigured loggers in different files
 
 **Avoid:**
+
 ```typescript
 // DON'T create new loggers in each file
 const logger = new Logger(); // Each file creates its own
-console.log('some event');   // Bypasses the logger entirely
+console.log('some event'); // Bypasses the logger entirely
 ```
 
 ### Use Middleware for Consistent Wide Events
@@ -83,7 +85,7 @@ export function wideEventMiddleware() {
       method: c.req.method,
       path: c.req.path,
       user_agent: c.req.header('user-agent'),
-      ...envContext,  // Environment automatically included
+      ...envContext, // Environment automatically included
     };
 
     // Make event accessible to handlers for enrichment
@@ -103,7 +105,7 @@ export function wideEventMiddleware() {
       throw error;
     } finally {
       wideEvent.duration_ms = Date.now() - startTime;
-      logger.info(wideEvent);  // Uses the single logger
+      logger.info(wideEvent); // Uses the single logger
     }
   };
 }

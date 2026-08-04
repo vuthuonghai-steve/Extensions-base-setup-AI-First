@@ -1,7 +1,7 @@
 ---
 trigger: glob
-description: "Quy chuẩn công nghệ, cấu trúc thư mục src/ 5 tầng và chuẩn mực lập trình TypeScript / React / WXT cho Chrome Extension MV3"
-globs: ["*.ts", "*.tsx", "wxt.config.ts", "package.json"]
+description: 'Quy chuẩn công nghệ, cấu trúc thư mục src/ 5 tầng và chuẩn mực lập trình TypeScript / React / WXT cho Chrome Extension MV3'
+globs: ['*.ts', '*.tsx', 'wxt.config.ts', 'package.json']
 ---
 
 # 💻 Rule: Tech Stack & Coding Conventions

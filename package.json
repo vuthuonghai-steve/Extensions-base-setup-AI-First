@@ -1,0 +1,55 @@
+{
+  "name": "my-wxt-extension",
+  "type": "module",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "prepare": "wxt prepare",
+    "predev": "node --experimental-strip-types scripts/validate-env.ts --mode=development",
+    "dev": "wxt -m development",
+    "prebuild": "node --experimental-strip-types scripts/validate-env.ts --mode=production",
+    "build": "wxt -m production build",
+    "build:staging": "pnpm prebuild-staging && wxt -m staging build",
+    "prebuild-staging": "node --experimental-strip-types scripts/validate-env.ts --mode=staging",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "arc1": "depcruise src --config .dependency-cruiser.cjs",
+    "zip": "wxt zip"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "wxt": "0.21.3",
+    "@wxt-dev/module-react": "1.2.2",
+    "vite": "8.2.0",
+    "typescript": "~6.0.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.3",
+    "web-ext": "^10.5.0",
+    "eslint": "10.8.0",
+    "@eslint/js": "10.0.1",
+    "typescript-eslint": "8.66.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.3",
+    "eslint-config-prettier": "10.1.8",
+    "prettier": "3.9.6",
+    "vitest": "4.1.10",
+    "happy-dom": "^20.8.3",
+    "dependency-cruiser": "18.1.1",
+    "@playwright/test": "1.62.1",
+    "playwright": "1.62.1"
+  }
+}

@@ -36,6 +36,7 @@ flowchart LR
 ```
 
 **Available themes:**
+
 - `default` - Standard blue theme
 - `forest` - Green earth tones
 - `dark` - Dark mode friendly
@@ -45,6 +46,7 @@ flowchart LR
 ### Theme Examples
 
 **Default Theme:**
+
 ```mermaid
 ---
 config:
@@ -58,6 +60,7 @@ flowchart LR
 ```
 
 **Dark Theme:**
+
 ```mermaid
 ---
 config:
@@ -69,6 +72,7 @@ flowchart LR
 ```
 
 **Forest Theme:**
+
 ```mermaid
 ---
 config:
@@ -134,6 +138,7 @@ flowchart TD
 ```
 
 **ELK node placement strategies:**
+
 - `SIMPLE` - Basic placement
 - `NETWORK_SIMPLEX` - Network optimization
 - `LINEAR_SEGMENTS` - Linear arrangement
@@ -198,40 +203,43 @@ flowchart TD
 ### Flowchart Styling
 
 **Class-based styling:**
+
 ```mermaid
 flowchart TD
     A[Normal]:::success
     B[Warning]:::warning
     C[Error]:::error
-    
+
     classDef success fill:#00b894,stroke:#00a383,color:#fff
     classDef warning fill:#fdcb6e,stroke:#e8b923,color:#333
     classDef error fill:#ff6b6b,stroke:#ee5253,color:#fff
-    
+
     A --> B --> C
 ```
 
 **Node-specific styling:**
+
 ```mermaid
 flowchart LR
     A[Node A]
     B[Node B]
     C[Node C]
-    
+
     style A fill:#ff6b6b,stroke:#333,stroke-width:4px
     style B fill:#4ecdc4,stroke:#333,stroke-width:2px
     style C fill:#ffe66d,stroke:#333,stroke-width:2px
-    
+
     A --> B --> C
 ```
 
 **Link styling:**
+
 ```mermaid
 flowchart LR
     A --> B
     B --> C
     C --> D
-    
+
     linkStyle 0 stroke:#ff6b6b,stroke-width:4px
     linkStyle 1 stroke:#4ecdc4,stroke-width:2px
     linkStyle 2 stroke:#ffe66d,stroke-width:2px
@@ -244,12 +252,12 @@ sequenceDiagram
     participant A
     participant B
     participant C
-    
+
     A->>B: Message 1
     B->>C: Message 2
-    
+
     Note over A,C: Styled note
-    
+
     %%{init: {'theme':'forest'}}%%
 ```
 
@@ -261,13 +269,13 @@ classDiagram
         +String name
         +login()
     }
-    
+
     class Admin {
         +manageUsers()
     }
-    
+
     User <|-- Admin
-    
+
     %%{init: {'theme':'dark'}}%%
 ```
 
@@ -282,7 +290,7 @@ flowchart TB
     B --> D
     C --> E
     D --> E
-    
+
     %% This is a comment - helps organize complex diagrams
 ```
 
@@ -295,11 +303,11 @@ flowchart LR
     A[GitHub]
     B[Documentation]
     C[Live Demo]
-    
+
     click A "https://github.com" "Go to GitHub"
     click B "https://mermaid.js.org" "View Docs"
     click C "https://mermaid.live" "Try Live Editor"
-    
+
     A --> B --> C
 ```
 
@@ -311,9 +319,9 @@ Add hover information:
 flowchart LR
     A[Service A]
     B[Service B]
-    
+
     A -.->|REST API| B
-    
+
     %% Tooltips are defined with click links
     click A "https://api.example.com" "API Documentation"
     click B "https://dashboard.example.com" "Service Dashboard"
@@ -327,15 +335,15 @@ flowchart TB
         A[Web App]
         B[Mobile App]
     end
-    
+
     subgraph Backend
         C[API]
         D[Database]
     end
-    
+
     A & B --> C
     C --> D
-    
+
     style Frontend fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
     style Backend fill:#fff3e0,stroke:#ff9800,stroke-width:2px
 ```
@@ -345,18 +353,18 @@ flowchart TB
 ```mermaid
 flowchart TD
     %% This is a single-line comment
-    
+
     %% Multi-line comments can be created
     %% by using multiple comment lines
-    
+
     A[Start]
     B[Process]
     C[End]
-    
+
     %% Define relationships
     A --> B
     B --> C
-    
+
     %% Add styling
     style A fill:#90EE90
     style C fill:#FFB6C1
@@ -369,40 +377,40 @@ flowchart TB
     subgraph production[Production Environment]
         direction LR
         lb[Load Balancer]
-        
+
         subgraph servers[Application Servers]
             app1[Server 1]
             app2[Server 2]
             app3[Server 3]
         end
-        
+
         cache[(Redis Cache)]
         db[(PostgreSQL)]
     end
-    
+
     subgraph monitoring[Monitoring]
         logs[Log Aggregator]
         metrics[Metrics Dashboard]
     end
-    
+
     users[Users] --> lb
     lb --> app1 & app2 & app3
     app1 & app2 & app3 --> cache
     app1 & app2 & app3 --> db
     app1 & app2 & app3 --> logs
     logs --> metrics
-    
+
     style production fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
     style servers fill:#fff3e0,stroke:#ff9800,stroke-width:2px
     style monitoring fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-    
+
     style lb fill:#ffeb3b,stroke:#fbc02d,stroke-width:2px
     style cache fill:#ce93d8,stroke:#ab47bc,stroke-width:2px
     style db fill:#ce93d8,stroke:#ab47bc,stroke-width:2px
-    
+
     classDef serverClass fill:#81c784,stroke:#4caf50,stroke-width:2px,color:#000
     class app1,app2,app3 serverClass
-    
+
     linkStyle 0,1,2,3 stroke:#4caf50,stroke-width:2px
     linkStyle 4,5,6,7,8,9 stroke:#ff9800,stroke-width:1px
 ```
@@ -413,7 +421,7 @@ Use CSS to make diagrams responsive:
 
 ```html
 <div style="max-width: 100%; overflow: auto;">
-    <pre class="mermaid">
+  <pre class="mermaid">
         flowchart LR
             A --> B --> C
     </pre>
@@ -466,6 +474,7 @@ flowchart TD
 ```
 
 **Accessibility tips:**
+
 - Use high contrast color combinations
 - Don't rely solely on color to convey meaning
 - Include descriptive text labels
@@ -489,6 +498,7 @@ flowchart TD
 ```
 
 **Performance tips:**
+
 - Use ELK layout for diagrams with >20 nodes
 - Enable edge merging for simplified connections
 - Split very large diagrams into multiple focused views
@@ -513,22 +523,22 @@ flowchart LR
 ```html
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ 
-            startOnLoad: true,
-            theme: 'dark',
-            look: 'handDrawn'
-        });
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        look: 'handDrawn',
+      });
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <pre class="mermaid">
         flowchart LR
             A --> B
     </pre>
-</body>
+  </body>
 </html>
 ```
 
@@ -547,7 +557,7 @@ function DiagramComponent() {
     React.useEffect(() => {
         mermaid.contentLoaded();
     }, []);
-    
+
     return (
         <div className="mermaid">
             flowchart LR

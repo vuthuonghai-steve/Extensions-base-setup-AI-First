@@ -1,7 +1,12 @@
 ---
 trigger: glob
-description: "Quy chuẩn kiến trúc Telemetry tập trung (logger.ts → IPC LOG_SINK → Ring Buffer → Broadcast → Debug Console) theo §6 Architect-workspace.md, ADR-003, OBS-1..3. Bắt buộc khi sửa telemetry/, log-schema.ts, debug-console-app/"
-globs: ["src/2_platform_adapters/telemetry/**", "src/0_contracts/log-schema.ts", "src/4_presentation/extension-views/debug-console-app/**"]
+description: 'Quy chuẩn kiến trúc Telemetry tập trung (logger.ts → IPC LOG_SINK → Ring Buffer → Broadcast → Debug Console) theo §6 Architect-workspace.md, ADR-003, OBS-1..3. Bắt buộc khi sửa telemetry/, log-schema.ts, debug-console-app/'
+globs:
+  [
+    'src/2_platform_adapters/telemetry/**',
+    'src/0_contracts/log-schema.ts',
+    'src/4_presentation/extension-views/debug-console-app/**',
+  ]
 ---
 
 # 🪵 Rule: Telemetry — Logging & Observability
@@ -51,15 +56,15 @@ Background chính   ─┘
 
 Định nghĩa **Type `LogEntry`** được chuyển về **`src/0_contracts/log-schema.ts`** (Layer 0 — nguồn sự thật duy nhất, không phụ thuộc ai). Mọi log entry từ `logger.ts` bắt buộc đủ 7 trường để hỗ trợ LLM Self-Debugging (< 3s RCA):
 
-| Trường | Mô tả & Định dạng | Ví dụ |
-|:---|:---|:---|
-| `trace_id` | Correlation ID — UUIDv4 | `"8f3a1b2c-9012-4e5f-b678-123456789abc"` |
-| `scope` | Bounded context phát sinh log | `"bookmark-manager"`, `"telemetry"`, `"background"` |
-| `level` | `DEBUG` / `INFO` / `WARN` / `ERROR` / `FATAL` | `"ERROR"` |
-| `file_line` | Tọa độ file:dòng phát sinh log | `"src/2_platform_adapters/telemetry/logger.ts:142"` |
-| `decision_reason` | Lý do nghiệp vụ / nguyên nhân sự cố bằng ngôn ngữ tự nhiên | `"Storage quota exceeded during batch write"` |
-| `payload` | Metadata JSON đã **sanitize PII** | `{ "error_code": "QUOTA_EXCEEDED", "entries": 5000 }` |
-| `timestamp` | ISO-8601 UTC | `"2026-07-27T05:30:00.000Z"` |
+| Trường            | Mô tả & Định dạng                                          | Ví dụ                                                 |
+| :---------------- | :--------------------------------------------------------- | :---------------------------------------------------- |
+| `trace_id`        | Correlation ID — UUIDv4                                    | `"8f3a1b2c-9012-4e5f-b678-123456789abc"`              |
+| `scope`           | Bounded context phát sinh log                              | `"bookmark-manager"`, `"telemetry"`, `"background"`   |
+| `level`           | `DEBUG` / `INFO` / `WARN` / `ERROR` / `FATAL`              | `"ERROR"`                                             |
+| `file_line`       | Tọa độ file:dòng phát sinh log                             | `"src/2_platform_adapters/telemetry/logger.ts:142"`   |
+| `decision_reason` | Lý do nghiệp vụ / nguyên nhân sự cố bằng ngôn ngữ tự nhiên | `"Storage quota exceeded during batch write"`         |
+| `payload`         | Metadata JSON đã **sanitize PII**                          | `{ "error_code": "QUOTA_EXCEEDED", "entries": 5000 }` |
+| `timestamp`       | ISO-8601 UTC                                               | `"2026-07-27T05:30:00.000Z"`                          |
 
 ## 4. Quy tắc cấm (`must_not`)
 

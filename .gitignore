@@ -36,7 +36,7 @@ yarn-error.log*
 pnpm-debug.log*
 logs/
 *.log
-
+.pytest_cache
 # Temporary & Test files
 coverage/
 .cache/
@@ -47,3 +47,7 @@ coverage/
 .codegraph 
 .omc
 .claude
+
+## trash 
+.txt
+
