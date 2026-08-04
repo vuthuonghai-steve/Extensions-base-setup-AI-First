@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# WXT Framework Output & Internal Cache
+.output/
+.wxt/
+stats.html
+stats-*.json
+
+# Zip & Extension Packages
+*.zip
+*.crx
+*.pem
+
+# Environment & Secret files
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDE / Editor files
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs & Debugging
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# Temporary & Test files
+coverage/
+.cache/
+
+
+# agent 
+.omo 
+.codegraph 
+.omc
+.claude
