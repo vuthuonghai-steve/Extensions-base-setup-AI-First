@@ -1,7 +1,13 @@
 ---
 trigger: glob
-description: "Quy chuẩn kiến trúc Storage chrome.storage (local/sync/session drivers) + State Persistence Layer (session-cache) + Ring Buffer Telemetry"
-globs: ["src/2_platform_adapters/storage/**", "src/1_engine/background/state/**", "src/0_contracts/storage-schema.ts", "src/2_platform_adapters/telemetry/log-ring-buffer.ts"]
+description: 'Quy chuẩn kiến trúc Storage chrome.storage (local/sync/session drivers) + State Persistence Layer (session-cache) + Ring Buffer Telemetry'
+globs:
+  [
+    'src/2_platform_adapters/storage/**',
+    'src/1_engine/background/state/**',
+    'src/0_contracts/storage-schema.ts',
+    'src/2_platform_adapters/telemetry/log-ring-buffer.ts',
+  ]
 ---
 
 # 💾 Rule: Storage chrome.storage & State Persistence Layer
@@ -17,6 +23,7 @@ globs: ["src/2_platform_adapters/storage/**", "src/1_engine/background/state/**"
 Chrome Extension MV3 là hệ đa tiến trình; Service Worker bị Chrome **random kill sau ~30s idle** — không đảm bảo sống (Architect §2). Hệ quả trực tiếp: **không tin memory SW**, mọi state phải externalize ra `chrome.storage`; cần **State Persistence Layer** riêng biệt, không chỉ storage adapter chung chung (Architect §2, §1.2).
 
 Mô hình gồm 2 vai trò:
+
 - **Storage drivers** (`2_platform_adapters/storage/`) — bọc `chrome.*` 1-1, tầng vật lý.
 - **Session cache** (`1_engine/background/state/session-cache.ts`) — đệm SW: nơi đổ state trước khi chết + rehydrate khi thức dậy.
 
@@ -26,11 +33,11 @@ Mô hình gồm 2 vai trò:
 
 Mỗi driver bọc **1-1** API `chrome.storage` tương ứng (`get`/`set`/`remove`/`getBytesInUse`/`onChanged`), chỉ import type từ `0_contracts` (Layer 0) — không import từ module nghiệp vụ (Architect §4, §9). Unit test qua `@webext-core/fake-browser` (Architect §7).
 
-| File | API | Vai trò | Giới hạn Chrome |
-|---|---|---|---|
-| `local-driver.ts` | `chrome.storage.local` | Tầng bền vững — **nguồn sự thật**: token người dùng (encrypt nếu cần, Architect §6.3), dữ liệu nghiệp vụ durable | ~10MB |
-| `sync-driver.ts` | `chrome.storage.sync` | Chỉ **preference không nhạy cảm** đồng bộ đa thiết bị; không đặt dữ liệu lớn/nhạy cảm | ~100KB tổng, 8KB/item |
-| `session-driver.ts` | `chrome.storage.session` | Volatile — sống qua SW restart, **chết khi browser đóng**; chỉ dữ liệu **tái tạo được** | 10MB |
+| File                | API                      | Vai trò                                                                                                          | Giới hạn Chrome       |
+| ------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------- | --------------------- |
+| `local-driver.ts`   | `chrome.storage.local`   | Tầng bền vững — **nguồn sự thật**: token người dùng (encrypt nếu cần, Architect §6.3), dữ liệu nghiệp vụ durable | ~10MB                 |
+| `sync-driver.ts`    | `chrome.storage.sync`    | Chỉ **preference không nhạy cảm** đồng bộ đa thiết bị; không đặt dữ liệu lớn/nhạy cảm                            | ~100KB tổng, 8KB/item |
+| `session-driver.ts` | `chrome.storage.session` | Volatile — sống qua SW restart, **chết khi browser đóng**; chỉ dữ liệu **tái tạo được**                          | 10MB                  |
 
 Phân loại ghi theo mục đích: durable + có giá trị lâu dài → `local`; tuỳ chỉnh người dùng muốn đồng bộ → `sync`; tạm thời, có thể tái tạo → `session`. Sai tầng = sai thiết kế (vd đặt state nghiệp vụ vào session thì browser đóng là mất).
 
@@ -110,13 +117,13 @@ Phân loại ghi theo mục đích: durable + có giá trị lâu dài → `loca
 
 ## 11. Ma trận quyền hạn ghi (Architect §8)
 
-| Tầng/Context | Quyền ghi `chrome.storage` |
-|---|---|
-| Background Script | ✅ Đầy đủ |
-| Content Script (Isolated) | ⚠️ Hạn chế (`runtime`, `storage`, `i18n`) — chỉ ghi qua driver, không tự ý mở rộng |
-| Content Script (Main World) | ❌ Không có `chrome.*` — phải `postMessage` ngược qua `main-world-bridge.ts` — ✅ **G1-06** (post_message_regex + bridge_file) (Architect §9) |
-| Popup/SidePanel/Options/Offscreen | ✅ Đầy đủ |
-| Layer 3 (`3_modules/`) | ❌ Cấm import `chrome` — gọi driver **qua interface** — ✅ **G1-06** (chrome_regex + dom_regex) (ARC-2, Architect §8, §9) |
+| Tầng/Context                      | Quyền ghi `chrome.storage`                                                                                                                    |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Background Script                 | ✅ Đầy đủ                                                                                                                                     |
+| Content Script (Isolated)         | ⚠️ Hạn chế (`runtime`, `storage`, `i18n`) — chỉ ghi qua driver, không tự ý mở rộng                                                            |
+| Content Script (Main World)       | ❌ Không có `chrome.*` — phải `postMessage` ngược qua `main-world-bridge.ts` — ✅ **G1-06** (post_message_regex + bridge_file) (Architect §9) |
+| Popup/SidePanel/Options/Offscreen | ✅ Đầy đủ                                                                                                                                     |
+| Layer 3 (`3_modules/`)            | ❌ Cấm import `chrome` — gọi driver **qua interface** — ✅ **G1-06** (chrome_regex + dom_regex) (ARC-2, Architect §8, §9)                     |
 
 ---
 

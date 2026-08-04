@@ -1,7 +1,7 @@
 ---
 trigger: glob
-description: "Quy chuẩn kiến trúc Layer 4 Presentation cho Chrome Extension MV3 — hai thế giới UI, Shadow DOM, ADR-001/ADR-007, tổ chức feature thay thế src/features"
-globs: ["src/4_presentation/**", "src/3_modules/composite-modules/**"]
+description: 'Quy chuẩn kiến trúc Layer 4 Presentation cho Chrome Extension MV3 — hai thế giới UI, Shadow DOM, ADR-001/ADR-007, tổ chức feature thay thế src/features'
+globs: ['src/4_presentation/**', 'src/3_modules/composite-modules/**']
 ---
 
 # 🎨 Quy chuẩn Kiến trúc Giao diện (UI Architecture Conventions)
@@ -12,10 +12,10 @@ Nguồn sự thật: `Docs/Setups/Architect-workspace/Architect-workspace.md` (�
 
 ## 1. Hai thế giới UI (Layer 4 — Presentation)
 
-| Thế giới UI | Vị trí | Đặc điểm |
-|---|---|---|
-| **Extension Surfaces** | `4_presentation/extension-views/` (popup-app, sidepanel-app, debug-console-app) | React SPA thông thường, DOM riêng, `chrome.*` đầy đủ, bypass CORS |
-| **UI inject vào trang web** | `4_presentation/shadow-dom/`, `main-world-ui/` | **BẮT BUỘC qua Shadow DOM** để cô lập CSS — trang đích không phá giao diện extension và ngược lại ⚠️ Còn soft — quy ước UI, chưa có hook |
+| Thế giới UI                 | Vị trí                                                                          | Đặc điểm                                                                                                                                 |
+| --------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Extension Surfaces**      | `4_presentation/extension-views/` (popup-app, sidepanel-app, debug-console-app) | React SPA thông thường, DOM riêng, `chrome.*` đầy đủ, bypass CORS                                                                        |
+| **UI inject vào trang web** | `4_presentation/shadow-dom/`, `main-world-ui/`                                  | **BẮT BUỘC qua Shadow DOM** để cô lập CSS — trang đích không phá giao diện extension và ngược lại ⚠️ Còn soft — quy ước UI, chưa có hook |
 
 ## 2. Cấu trúc `4_presentation/`
 
@@ -46,13 +46,13 @@ Nguồn sự thật: `Docs/Setups/Architect-workspace/Architect-workspace.md` (�
 
 ## 5. Tổ chức Feature (thay thế `src/features/`)
 
-| Thành phần cũ (`src/features/`) | Vị trí mới |
-|---|---|
-| Use-cases | `3_modules/composite-modules/{feature}/use-cases/` + `index.ts` + `.test.ts` |
-| Logic đơn nhiệm | `3_modules/sub-modules/` |
-| Types / contract | `0_contracts/` |
-| Bridges / services | `2_platform_adapters/` |
-| Screen / sub-components / hooks | `4_presentation/extension-views/{app}/` hoặc `shadow-dom/` |
+| Thành phần cũ (`src/features/`) | Vị trí mới                                                                   |
+| ------------------------------- | ---------------------------------------------------------------------------- |
+| Use-cases                       | `3_modules/composite-modules/{feature}/use-cases/` + `index.ts` + `.test.ts` |
+| Logic đơn nhiệm                 | `3_modules/sub-modules/`                                                     |
+| Types / contract                | `0_contracts/`                                                               |
+| Bridges / services              | `2_platform_adapters/`                                                       |
+| Screen / sub-components / hooks | `4_presentation/extension-views/{app}/` hoặc `shadow-dom/`                   |
 
 ## 6. Đã Bỏ Hoàn Toàn
 
