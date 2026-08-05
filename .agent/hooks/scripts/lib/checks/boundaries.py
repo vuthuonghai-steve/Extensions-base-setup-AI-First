@@ -61,9 +61,16 @@ def scan_arch(content: str, target_file: str, rules: dict) -> list[dict]:
                         {"kind": "dom_api", "match": match.group(0), "line": line_no}
                     )
 
-    # (d) postMessage ngoài bridge_file
+    # (d) postMessage ngoài bridge_file + ngoài danh sách exclude (runtime Port API)
     bridge_file = str(arch.get("bridge_file", ""))
-    if not target_file.endswith(bridge_file):
+    exclude_paths = [
+        str(p) for p in arch.get("post_message_exclude_paths", [])
+        if isinstance(p, (str, bytes)) or hasattr(p, "endswith")
+    ]
+    excluded = target_file.endswith(bridge_file) or any(
+        target_file.endswith(p) for p in exclude_paths
+    )
+    if not excluded:
         post_re = _compile(str(arch.get("post_message_regex", "")))
         if post_re is not None:
             for line_no, line in enumerate(lines, start=1):

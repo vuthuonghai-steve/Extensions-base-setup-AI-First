@@ -1,6 +1,32 @@
-# Validation Report — Phase 1 & Phase 2
+# Validation Report — Phases 1–3
 
-> Ngày: 2026-08-05 · Branch: `feat/phase-2-layer0-contracts`
+> Ngày: 2026-08-05 · Branch: `feat/phase-3-layer2-adapters`
+
+## Kết quả cơ học Giai đoạn 3 (Layer 2 — Platform Adapters & Cross-cutting Services)
+
+| Kiểm tra | Kết quả | Chi tiết |
+|---|---|---|
+| `pnpm typecheck` | ✅ PASS | `tsc --noEmit` — 0 lỗi (strict, `noUncheckedIndexedAccess`) |
+| `pnpm lint` | ✅ PASS | ESLint — 0 lỗi (OBS-1 `no-console` trừ `telemetry/logger.ts`, TYP-1) |
+| `pnpm test` | ✅ PASS | Vitest 113/113 (15 files — 13 unit mới cho 2_platform_adapters) |
+| `pnpm build` | ✅ PASS | WXT build `.output/chrome-mv3` xanh — manifest `permissions: ['storage']` (D3) |
+| `pnpm arc1` | ✅ PASS | depcruise 0 vi phạm (107 modules — ARC-1: Layer 2 chỉ import 0_contracts) |
+| `pnpm format:check` | ✅ PASS | Prettier 100% clean |
+| CFG-1 secret scan | ✅ PASS | 0 match secret trong `.output/` (G1-08 + CI) |
+| G0-04 viability | ✅ PASS | GO Phase 3 thêm vào viability-gate.md (T0) trước mọi write `src/` |
+
+**Phạm vi (D1 — 15 file):** telemetry 5 (trace-id, log-ring-buffer, log-sink, log-broadcaster, logger) · config 2 (build-config, runtime-config-adapter) · storage 4 (storage-driver + local/sync/session) · ipc 4 (sender, port-channel, router, infrastructure-handlers). Defer tabs/scripting/permissions/declarative-net (YAGNI, permission tối thiểu).
+
+**Quyết định kỹ thuật (D1–D10):**
+- D4 — `createLogger(scope, {transport?})`: file_line tự capture qua `new Error().stack`, console mirror duy nhất tại logger.ts.
+- D5 — ring buffer FIFO 500 + head monotonic + evict byte 4MB + batch 100ms (1 storage.set/lô).
+- D6 — sender timeout 3s, retry 1x/150ms cho read-only, 0 retry cho side-effect (LogSink/SettingsSet).
+- D9 — `isLogEntry()` structural guard + `sanitizePayload()` PII (không thêm zod vào 0_contracts).
+- D10 — router typed qua IpcResponseMap + 4 handler hạ tầng.
+
+**Điều phối 4 executor song song:** A (config/ipc core) + B (storage) + C (telemetry core) + D (logger/router); thống nhất interface StorageDriver (B) làm nguồn chung, C hấp thụ — bỏ cast `as never` (TYP-1).
+
+**Ghi chú thay đổi hạ tầng hooks (ngoài scope plan, cần duyệt khi merge):** G1-06 `post_message_regex` chặn nhầm `port.postMessage` (runtime Port API hợp lệ — ARC-3 chỉ nhắm window.postMessage giữa 2 world). Patch config: `post_message_exclude_paths` trong rules.yaml (`.agent/` + `.claude/`) + boundaries.py exclude logic + 3 pytest (111 pass). Phạm vi: chỉ port-channel/log-broadcaster (+specs); các file khác vẫn deny.
 
 ## Kết quả cơ học Giai đoạn 2 (Layer 0 Contracts & Core Types)
 

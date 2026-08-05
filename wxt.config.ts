@@ -20,7 +20,7 @@ export default defineConfig({
       name: env.WXT_APP_NAME ?? '',
       description: env.WXT_APP_DESCRIPTION ?? '',
       version: '0.1.0',
-      permissions: [], // permission tối thiểu — bổ sung theo phase
+      permissions: ['storage'], // D3 Phase 3 — storage drivers + ring buffer runtime; permission tối thiểu, thêm theo phase
     };
   },
 });
