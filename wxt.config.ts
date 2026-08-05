@@ -20,7 +20,14 @@ export default defineConfig({
       name: env.WXT_APP_NAME ?? '',
       description: env.WXT_APP_DESCRIPTION ?? '',
       version: '0.1.0',
-      permissions: ['storage'], // D3 Phase 3 — storage drivers + ring buffer runtime; permission tối thiểu, thêm theo phase
+      permissions: ['storage', 'alarms', 'sidePanel'], // Phase 3 storage + Phase 5 D11: keep-alive alarm + side_panel; tối thiểu theo feature thật
+      side_panel: {
+        default_path: 'sidepanel/index.html',
+      },
+      options_ui: {
+        page: 'options/index.html',
+        open_in_tab: true,
+      },
     };
   },
 });

@@ -1,4 +1,38 @@
-# Validation Report — Phases 1–4
+# Validation Report — Phases 1–5
+
+> Ngày Phase 5: 2026-08-06 · Branch: `feat/phase-5-engine-presentation`
+
+## Kết quả cơ học Giai đoạn 5 (Layer 1 Engine Entrypoints & Layer 4 Presentation)
+
+| Kiểm tra | Kết quả | Chi tiết |
+|---|---|---|
+| `pnpm typecheck` | ✅ PASS | `tsc --noEmit` — 0 lỗi (strict; thêm `jsx: react-jsx` cho React apps) |
+| `pnpm lint` | ✅ PASS | ESLint — 0 lỗi (fix no-misused-promises trên onMessage, no-unsafe-assignment test) |
+| `pnpm format:check` | ✅ PASS | Prettier 100% clean |
+| `pnpm test` | ✅ PASS | Vitest **151/151** (24 files — +4 file mới: `tests/unit/1_engine/` keep-alive + session-cache + message-listener, `tests/unit/4_presentation/` log-filters + export-logs) |
+| `pnpm test --coverage` | ✅ PASS | **TST-1: Lines 96.34% ≥ 90%** · Functions 100% · Statements 91.66% · Branches 87.5% ≥ 80% — chỉ tính `src/3_modules/**` |
+| `pnpm build` | ✅ PASS | WXT build `.output/chrome-mv3` xanh — manifest đủ action/side_panel/options_ui + permissions storage/alarms/sidePanel |
+| `pnpm arc1` | ✅ PASS | depcruise 0 vi phạm (154 modules, 284 dependencies — `engine-khong-ngo`: 1_engine không import 3_modules/4_presentation) |
+| G1-08 secret scan | ✅ PASS | 0 secret thật; 1 dương giả `-----BEGIN` (regex SECRET_VALUE_PATTERN trong source log-sink) — CI chặn lớp cuối |
+| G0-04 viability | ✅ PASS | GO Phase 5 thêm vào viability-gate.md (T0) trước mọi write `src/` |
+
+**Phạm vi (T1–T11 — 20 file):**
+- `1_engine/background/`: bootstrap `index.ts` (Router instance duy nhất + registerInfrastructureHandlers + 4 listeners — mọi đăng ký TRONG defineBackground để tránh side-effect lúc module eval bị fake-browser chặn trong `wxt prepare`), `lifecycle/` (on-installed, on-startup, keep-alive alarm 0.5min → `session.sw_active_timestamp`), `listeners/` (message-listener route thuần trả `true` giữ channel — MV3 async; alarms-listener), `state/session-cache.ts` (wrapper chrome.storage.session).
+- `1_engine/content/` scaffold phi-entrypoint: `isolated-world/dom-bridge.ts` + `main-world-bridge.ts` (file ngoại lệ G1-06) + `main-world/page-context-hook.ts` (stub). `1_engine/offscreen/handlers/dom-parse-handler.ts` (pure fn). Entrypoint content/offscreen defer Phase 6 (matches non-empty bắt buộc).
+- `1_engine/{popup,sidepanel,options,debug-console}/index.html` — **đặt trực tiếp trong entrypointsDir** (glob WXT chỉ nhận `popup/index.html` cấp 1, không nhận `ui-pages/popup/`) — script src tương đối `../../4_presentation/...` (alias `/@presentation/...` không resolve trong HTML).
+- `4_presentation/extension-views/`: `popup-app` (settings showcase ADR-007 — fetch SettingsGet khi mount, toggle SettingsSet, mirror state), `debug-console-app` (LogViewer port `telemetry.broadcast` tail + filter, StorageInspector IPC StorageInspect, export-logs Blob JSON không console), `sidepanel-app` (menu tĩnh), `options-app` (shell tĩnh).
+- `wxt.config.ts`: permissions `['storage','alarms','sidePanel']` + manifest function-form side_panel/options_ui (WXT tự sinh entrypoint HTML → default_path tự fix `sidepanel.html`). `tsconfig.json`: `jsx: react-jsx`.
+
+**Quyết định kỹ thuật / chệch khỏi plan (đã xử lý):**
+- **D7 chệch**: tree §4 ghi `ui-pages/` nhưng glob WXT không nhận entrypoint HTML nested → đặt thẳng `src/1_engine/{popup,...}/index.html` (vẫn đúng tinh thần "ui-pages = shell, UI thật ở @presentation").
+- **D1 chệch**: registerInfrastructureHandlers chuyển vào trong `defineBackground` — để ngoài, `wxt prepare` (fake-browser) crash vì log-broadcaster module-level subscribe `runtime.onConnect`.
+- **D3 chệch**: onMessage listener phải `return true` + sendResponse callback (type sync, không trả promise) — nếu không, MV3 đóng channel, response undefined.
+- **Recursion fix**: bỏ log `Routing` trong message-listener — logger transport gửi LogSink qua runtime.sendMessage → listener nhận lại chính nó (loop vô hạn khi threshold DEBUG).
+- **Manifest verify (R2)**: WXT tự sinh action/side_panel/options_ui từ entrypoint HTML — `default_path` tự thành `sidepanel.html` (tên entrypoint), `options_ui.open_in_tab` về false (WXT override).
+
+**Việc tiếp theo Phase 6:** content/offscreen entrypoint với matches thật (feature E2E), Playwright E2E (TST-2/OBS-3), tabs/context-menu listener khi có feature, shared-design-system khi có consumer.
+
+---
 
 > Ngày Phase 4: 2026-08-06 · Branch: `feat/phase-4-layer3-composite-modules`
 
