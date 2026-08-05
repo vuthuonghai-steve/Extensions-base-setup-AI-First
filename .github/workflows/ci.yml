@@ -37,8 +37,8 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
-      - name: Unit + contract tests (TST-1)
-        run: pnpm test
+      - name: Unit + contract tests (TST-1 — coverage 90% lines trên 3_modules/)
+        run: pnpm test -- --coverage
 
       - name: Build (CFG-2 — fail cứng khi thiếu biến .env bắt buộc)
         run: pnpm build

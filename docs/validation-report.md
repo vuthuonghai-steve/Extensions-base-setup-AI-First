@@ -1,6 +1,39 @@
-# Validation Report — Phases 1–3
+# Validation Report — Phases 1–4
 
-> Ngày: 2026-08-05 · Branch: `feat/phase-3-layer2-adapters`
+> Ngày Phase 4: 2026-08-06 · Branch: `feat/phase-4-layer3-composite-modules`
+
+## Kết quả cơ học Giai đoạn 4 (Layer 3 — Pure Modules & Unit Testing)
+
+| Kiểm tra | Kết quả | Chi tiết |
+|---|---|---|
+| `pnpm typecheck` | ✅ PASS | `tsc --noEmit` — 0 lỗi (strict) |
+| `pnpm lint` | ✅ PASS | ESLint — 0 lỗi (fix `require-await` trên mock store test) |
+| `pnpm test` | ✅ PASS | Vitest **136/136** (19 files — 4 file `3_modules/` mới: 23 tests) |
+| `pnpm test --coverage` | ✅ PASS | **TST-1: Lines 96.34% (79/82) ≥ 90%** · Functions 100% · Statements 91.66% · Branches 86.66% ≥ 80% — chỉ tính `src/3_modules/**` |
+| `pnpm build` | ✅ PASS | WXT build `.output/chrome-mv3` xanh |
+| `pnpm arc1` | ✅ PASS | depcruise 0 vi phạm (160 modules, 337 dependencies — ARC-1: 3_modules không import Layer 2) |
+| `pnpm format:check` | ✅ PASS | Prettier 100% clean |
+| G0-04 viability | ✅ PASS | GO Phase 4 thêm vào viability-gate.md (T0) trước mọi write `src/` |
+
+**Phạm vi (D1–D3 — 9 file):** sub-modules 6 (`time-formatter` 5 tests · `dom-parser` 4 tests · `ai-stream-decoder` 4 tests) · composite `bookmark-manager` 3 (`index.ts` interface `BookmarkStore` + `use-cases/bookmark-actions.ts` save/delete + `bookmark-manager.test.ts` 10 tests) · coverage config + CI.
+
+**Quyết định kỹ thuật:**
+- D1 — 3 sub-modules đúng tên Architect §4, mỗi module 1 hàm chính thuần (không `chrome`/DOM — G1-06), invalid input → Result.err không throw.
+- D2 — composite mẫu `bookmark-manager`: validate URL, dedupe normalized (lowercase host, strip hash/trailing slash, path giữ case — chuẩn URL), Result pattern; **storage I/O qua interface `BookmarkStore` tự định nghĩa** — adapter thật lắp Phase 5 (ARC-1 chặn 3_modules import Layer 2).
+- D3 — test co-located `*.test.ts` theo cây §4.
+- Coverage: `vitest.config.ts` include `src/3_modules/**` + threshold lines/functions/statements **90%**, branches 80%; CI job test chạy `--coverage` (TST-1).
+
+**Ghi chú trong quá trình build (đã fix):**
+- G1-06 deny `document`/`chrome` ngay cả trong comment → comment module viết lại tránh trigger.
+- `new URL` lowercase host nhưng giữ case path (đúng chuẩn URL) → test expectation sửa theo.
+- Prettier reformat 2 file module sau `pnpm format`.
+- Dependency mới: `@vitest/coverage-v8@4.1.10` (devDep, cùng version Vitest 4.1.10 — vitest 4 không kèm coverage provider).
+
+**Việc tiếp theo Phase 5+:** lắp adapter `BookmarkStore` thật (storage Layer 2) khi build Engine — use-cases không đổi; feature thật (dom-parse save, AI stream) chỉ cần thêm use-case dùng 3 sub-modules.
+
+---
+
+> Ngày Phase 3: 2026-08-05 · Branch: `feat/phase-3-layer2-adapters`
 
 ## Kết quả cơ học Giai đoạn 3 (Layer 2 — Platform Adapters & Cross-cutting Services)
 
