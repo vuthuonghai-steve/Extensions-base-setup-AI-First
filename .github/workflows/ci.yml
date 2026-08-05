@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  # Job chính: BASE-0 → TST-1 → CFG-2 → ARC-1 → format (code-quality-and-gates.md §5)
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck (BASE-0)
+        run: pnpm typecheck
+
+      - name: Lint (BASE-0, OBS-1, TYP-1)
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Unit + contract tests (TST-1)
+        run: pnpm test
+
+      - name: Build (CFG-2 — fail cứng khi thiếu biến .env bắt buộc)
+        run: pnpm build
+
+      - name: Dependency boundary (ARC-1)
+        run: pnpm arc1
+
+      # CFG-1 — chặn secret lọt vào bundle trước merge (bản CI của hook G1-08)
+      - name: Secret scan dist/ (CFG-1)
+        run: |
+          if grep -rE 'sk-[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{30,}|ghp_[A-Za-z0-9]{30,}|-----BEGIN|sk-ant-[A-Za-z0-9_-]{20,}' .output/; then
+            echo "::error::CFG-1 FAIL — phát hiện secret pattern trong .output/"
+            exit 1
+          fi
+          echo "CFG-1 PASS — 0 match secret trong .output/"
+
+  # E2E (TST-2, OBS-3) — test chưa tồn tại (tests/e2e/ rỗng, chưa có
+  # playwright.config.ts), chạy khi nội dung e2e được thêm.
+  e2e:
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: false # bật khi tests/e2e/ có test thật
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build extension
+        run: pnpm build
+      - name: Playwright E2E
+        run: pnpm e2e

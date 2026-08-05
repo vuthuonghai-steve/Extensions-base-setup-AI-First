@@ -21,6 +21,7 @@ Dựa trên kiến trúc Clean Architecture & Manifest V3 của dự án đượ
   - `domain-entities.ts` (Thực thể nghiệp vụ thuần như Bookmark, User...).
   - `log-schema.ts` (Schema cho LogEntry).
 - **Vì sao**: **Layer 0 hoàn toàn độc lập, không phụ thuộc vào bất kỳ tầng nào khác.** Trong môi trường MV3, Background, Content Script, và Popup chạy trên 3 tiến trình vật lý riêng biệt. Đĩnh nghĩa Layer 0 trước đảm bảo "Nguồn sự thật duy nhất" (Single Source of Truth), giúp kiểm soát Type-safety xuyên process ngay từ đầu.
+- **✅ Hoàn tất (2026-08-05, merged PR #2 + commit `fc7d6ac`)**: toàn bộ `src/0_contracts/` (`ipc-actions.ts`, `ipc-payloads.ts`, `storage-schema.ts`, `domain-entities` qua `index.ts`, `log-schema.ts`, `config-schema.ts`) + review findings (tighten storage key types, OBS-2 lock `traceId` bắt buộc ở type level).
 
 ---
 
@@ -60,5 +61,17 @@ Dựa trên kiến trúc Clean Architecture & Manifest V3 của dự án đượ
   - Cấu hình **Playwright** để tự động hóa việc build và load Extension thật (`chromium.launchPersistentContext` với `--load-extension`).
   - Viết E2E tests trong `tests/e2e/` (luồng lưu bookmark, onboarding, kiểm tra real-time log trên Debug Console app).
 - **Vì sao**: Môi trường Manifest V3 có các kịch bản thực tế mà mock/Vitest không thể mô phỏng hết (Service Worker bị idle-kill, ranh giới an toàn giữa Isolated World và Main World, IPC streaming). Chạy E2E test trên trình duyệt thật ở giai đoạn cuối là bước nghiệm thu đảm bảo hệ thống vận hành đúng kiến trúc và đạt độ bền tuyệt đối.
+
+---
+
+### **Phụ lục: Trạng thái CI tự động (2026-08-05, merge `ci/github-actions`)**
+
+- ✅ `.github/workflows/ci.yml` **đã active** cho `pull_request` + `push` main, gồm các gate: **BASE-0** (typecheck, lint, format:check), **TST-1** (`pnpm test` — Vitest), **CFG-2** (`pnpm build` — fail cứng khi thiếu biến `.env` bắt buộc), **ARC-1** (`pnpm arc1` — depcruise), **CFG-1** (secret scan regex trong `.output/` — bản CI của hook G1-08).
+- ⏸ Job `e2e` **đã viết sẵn nhưng đang `if: false`** — chờ giai đoạn 6.
+- **Còn thiếu để hoàn thiện** (làm ở giai đoạn 6, sau khi có Layer 1 + Layer 4):
+  - `playwright.config.ts` + `tests/e2e/` + fixture `extension.fixture.ts` (`launchPersistentContext` + `context.serviceWorkers()` — theo testing-and-verification.md §2).
+  - Bật job `e2e` trong `ci.yml` (bỏ `if: false`).
+  - **OBS-3**: Playwright verify log xuất hiện đúng `traceId` trên Debug Console.
+  - **TST-1 coverage**: hiện chỉ `vitest run` không `--coverage` — cần config coverage report ngưỡng trên `3_modules/`.
 
 ---
