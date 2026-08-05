@@ -61,7 +61,7 @@ jobs:
     needs: quality
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    if: false  # bật khi tests/e2e/ có test thật
+    if: false # bật khi tests/e2e/ có test thật
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
