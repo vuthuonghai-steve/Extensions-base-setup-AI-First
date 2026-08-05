@@ -1,7 +1,31 @@
 {
-  "extends": "./.wxt/tsconfig.json", // wxt prepare sinh paths từ alias tự động — 1 nguồn sự thật
   "compilerOptions": {
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "target": "ESNext",
+    "module": "esnext",
+    "moduleDetection": "force",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
     "strict": true,
-    "noUncheckedIndexedAccess": true
-  }
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "paths": {
+      "@contracts": ["./src/0_contracts"],
+      "@contracts/*": ["./src/0_contracts/*"],
+      "@engine": ["./src/1_engine"],
+      "@engine/*": ["./src/1_engine/*"],
+      "@platform": ["./src/2_platform_adapters"],
+      "@platform/*": ["./src/2_platform_adapters/*"],
+      "@modules": ["./src/3_modules"],
+      "@modules/*": ["./src/3_modules/*"],
+      "@presentation": ["./src/4_presentation"],
+      "@presentation/*": ["./src/4_presentation/*"]
+    }
+  },
+  "include": ["src/**/*", "tests/**/*", "wxt.config.ts", ".wxt/wxt.d.ts", "vitest.config.ts"],
+  "exclude": ["node_modules", ".output"]
 }
