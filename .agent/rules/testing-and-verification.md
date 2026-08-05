@@ -44,23 +44,26 @@ await sw.evaluate(() => /* đọc state / trigger handler */);
 
 ```text
 tests/
-├── unit/                                 # Vitest
-│   ├── 3_modules/bookmark-manager.spec.ts
-│   └── 2_platform_adapters/storage-driver.spec.ts   # mock qua fake-browser
-├── e2e/                                  # Playwright — load extension thật
-│   ├── fixtures/extension.fixture.ts
+├── unit/                          # Vitest
+│   ├── *.spec.ts                  # sanity / schema — kiểm tra môi trường, config
+│   ├── 3_modules/
+│   │   └── <module>.spec.ts       # 1 spec / module — thuần, không mock
+│   └── 2_platform_adapters/
+│       └── <adapter>.spec.ts      # mock chrome.* qua @webext-core/fake-browser
+├── e2e/                           # Playwright — load extension build thật
+│   ├── fixtures/                  # extension.fixture.ts (launchPersistentContext)
 │   ├── flows/
-│   │   ├── save-bookmark.e2e.ts
-│   │   └── onboarding.e2e.ts
-│   └── debug-console.e2e.ts
+│   │   └── *.e2e.ts               # core user flows
+│   └── debug-console.e2e.ts       # verify log Debug Console (OBS-3)
 └── contract/
-    └── ipc-payload-shape.spec.ts
+    └── ipc-payload-shape.spec.ts  # khóa shape IPC payload (traceId bắt buộc)
 ```
 
-- **tests/unit/**: Vitest cho `3_modules/` (thuần, không mock) và `2_platform_adapters/` (mock `chrome.*` qua `@webext-core/fake-browser`).
+- **tests/unit/**: Vitest cho `3_modules/` (thuần, không mock — mỗi module 1 spec tại `tests/unit/3_modules/`) và `2_platform_adapters/` (mock `chrome.*` qua `@webext-core/fake-browser`).
 - **tests/e2e/**: Playwright load extension build thật; `fixtures/extension.fixture.ts` chứa `launchPersistentContext` + tiện ích lấy `serviceWorkers()`; `flows/*.e2e.ts` là core flow; `debug-console.e2e.ts` verify log trên Debug Console (OBS-3).
 - **tests/contract/ipc-payload-shape.spec.ts**: khóa shape IPC payload (field `traceId` bắt buộc — OBS-2) khỏi phá vỡ.
-- **Test co-located trong `3_modules/`**: giữ nguyên mẫu `bookmark-manager.test.ts` đặt cạnh mã nguồn (Vitest) — module thuần được test ngay tại chỗ.
+- **Test co-located trong `3_modules/`**: KHÔNG áp dụng — mẫu `bookmark-manager.test.ts` đặt cạnh mã nguồn đã bị thay thế. Mọi spec phải nằm trong `tests/` (xem nguyên tắc bên dưới).
+- **Mọi test nằm trong `tests/` — không đặt file test trong `src/`**: test ở `src/` sẽ bị instrument vào coverage `src/3_modules/**` (bóp méo %), và 2 pattern cùng pass vì không gate nào enforce vị trí — thống nhất 1 pattern duy nhất tại `tests/`.
 
 ## 4. Cổng kiểm chứng chất lượng bắt buộc (Gates)
 
