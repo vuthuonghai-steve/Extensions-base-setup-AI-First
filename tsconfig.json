@@ -27,6 +27,13 @@
       "@presentation/*": ["./src/4_presentation/*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*", "wxt.config.ts", ".wxt/wxt.d.ts", "vitest.config.ts"],
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "wxt.config.ts",
+    ".wxt/wxt.d.ts",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ],
   "exclude": ["node_modules", ".output"]
 }

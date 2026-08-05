@@ -61,17 +61,20 @@ Dựa trên kiến trúc Clean Architecture & Manifest V3 của dự án đượ
   - Cấu hình **Playwright** để tự động hóa việc build và load Extension thật (`chromium.launchPersistentContext` với `--load-extension`).
   - Viết E2E tests trong `tests/e2e/` (luồng lưu bookmark, onboarding, kiểm tra real-time log trên Debug Console app).
 - **Vì sao**: Môi trường Manifest V3 có các kịch bản thực tế mà mock/Vitest không thể mô phỏng hết (Service Worker bị idle-kill, ranh giới an toàn giữa Isolated World và Main World, IPC streaming). Chạy E2E test trên trình duyệt thật ở giai đoạn cuối là bước nghiệm thu đảm bảo hệ thống vận hành đúng kiến trúc và đạt độ bền tuyệt đối.
+- **✅ Hoàn tất (2026-08-06, nhánh `feat/phase-6-e2e-verification`)** — theo `Docs/Setups/phase-6-e2e-setup-plan.md` T6.1→T6.6:
+  - `playwright.config.ts` (testDir `tests/e2e`, testMatch `*.e2e.ts`) + `tests/e2e/fixtures/extension.fixture.ts` (launchPersistentContext + `channel: 'chromium'` — headless shell không load extension + helpers: `getServiceWorker`, `extensionUrl`, `emitLog`, `inspectStorage`, `waitForEntry`) + `tests/e2e/global.d.ts` (chrome types).
+  - 11 E2E tests trong `tests/e2e/flows/`: `smoke.e2e.ts`, `ipc-settings.e2e.ts` (SettingsGet/Set roundtrip + action chưa đăng ký → error), `sw-restart.e2e.ts` (keep-alive alarm + heartbeat ghi session + log vào ring buffer), `log-sink.e2e.ts` (entry đúng traceId + sanitize `[REDACTED]` + reject entry lỗi), `debug-console.e2e.ts` (OBS-3: LogViewer hiện log đúng traceId qua port + filter scope).
+  - Job `e2e` trong `ci.yml` **đã bật** (bỏ `if: false`) — E2E local xanh **2 lần liên tục** (`11 passed` × 2) trước khi bật.
+  - Coverage thresholds (TST-1) đã có sẵn trong `vitest.config.ts` (lines 90/functions 90/statements 90/branches 80 trên `3_modules/`) — verified negative test: fail khi dưới ngưỡng.
+  - ⚠️ **Giới hạn thực nghiệm**: SW idle-kill không mô phỏng nổi trong headless vì keep-alive alarm giữ SW sống (đúng thiết kế Architect §1.3) — test SW lifecycle thay bằng verify alarm đăng ký + heartbeat + state externalize trên SW thật. Bookmark/content-script E2E skipped (chưa có IPC action/entrypoints — xem plan §1).
 
 ---
 
-### **Phụ lục: Trạng thái CI tự động (2026-08-05, merge `ci/github-actions`)**
+### **Phụ lục: Trạng thái CI tự động (2026-08-05, merge `ci/github-actions`; cập nhật 2026-08-06 — Phase 6)**
 
-- ✅ `.github/workflows/ci.yml` **đã active** cho `pull_request` + `push` main, gồm các gate: **BASE-0** (typecheck, lint, format:check), **TST-1** (`pnpm test` — Vitest), **CFG-2** (`pnpm build` — fail cứng khi thiếu biến `.env` bắt buộc), **ARC-1** (`pnpm arc1` — depcruise), **CFG-1** (secret scan regex trong `.output/` — bản CI của hook G1-08).
-- ⏸ Job `e2e` **đã viết sẵn nhưng đang `if: false`** — chờ giai đoạn 6.
-- **Còn thiếu để hoàn thiện** (làm ở giai đoạn 6, sau khi có Layer 1 + Layer 4):
-  - `playwright.config.ts` + `tests/e2e/` + fixture `extension.fixture.ts` (`launchPersistentContext` + `context.serviceWorkers()` — theo testing-and-verification.md §2).
-  - Bật job `e2e` trong `ci.yml` (bỏ `if: false`).
-  - **OBS-3**: Playwright verify log xuất hiện đúng `traceId` trên Debug Console.
-  - **TST-1 coverage**: hiện chỉ `vitest run` không `--coverage` — cần config coverage report ngưỡng trên `3_modules/`.
+- ✅ `.github/workflows/ci.yml` **đã active** cho `pull_request` + `push` main, gồm các gate: **BASE-0** (typecheck, lint, format:check), **TST-1** (`pnpm test --coverage` — Vitest, thresholds 90% lines trên `3_modules/`), **CFG-2** (`pnpm build` — fail cứng khi thiếu biến `.env` bắt buộc), **ARC-1** (`pnpm arc1` — depcruise), **CFG-1** (secret scan regex trong `.output/` — bản CI của hook G1-08).
+- ✅ Job `e2e` **đã bật** (bỏ `if: false` — Phase 6): `pnpm install → playwright install --with-deps chromium → pnpm build → pnpm e2e` (TST-2 + OBS-3). E2E local xanh 2 lần liên tục trước khi bật.
+- ✅ **OBS-3**: Playwright verify log xuất hiện đúng `traceId` trên Debug Console (`tests/e2e/flows/debug-console.e2e.ts`).
+- ✅ **TST-1 coverage**: `vitest.config.ts` có `coverage.thresholds` (lines 90/functions 90/statements 90/branches 80 trên `3_modules/`) — verified negative test fail khi dưới ngưỡng.
 
 ---

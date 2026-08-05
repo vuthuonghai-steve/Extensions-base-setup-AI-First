@@ -48,6 +48,16 @@ export default [
     },
   },
   {
+    // Playwright fixtures dùng `use` (test.extend) — không phải React hook
+    files: ['tests/e2e/**/*.{ts,tsx}'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      'react-refresh/only-export-components': 'off',
+      // Fixture context async ({}, use) — Playwright require destructuring, không bỏ được
+      'no-empty-pattern': 'off',
+    },
+  },
+  {
     // OBS-1: cấm console trần trong src/ (mọi level)
     files: ['src/**/*.{ts,tsx}'],
     rules: { 'no-console': 'error' },

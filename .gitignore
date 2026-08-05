@@ -50,3 +50,8 @@ coverage/
 ## trash 
 .txt
 
+
+# Playwright E2E artifacts
+test-results/
+playwright-report/
+
