@@ -1,4 +1,4 @@
-# MVP Viability Gate — Phases 1–3: Infrastructure, Layer 0 Contracts & Layer 2 Adapters
+# MVP Viability Gate — Phases 1–4: Infrastructure, Contracts, Adapters & Layer 3 Modules
 
 > Quyết định Stage 4 (Human-only) — chủ dự án duyệt, 2026-08-05. Chốt theo
 > `Docs/Setups/phase-1-setup-plan.md` §10 (Q1–Q4).
@@ -26,6 +26,16 @@
 - **Chỉ import** từ `0_contracts` + `wxt/browser` (global chrome); cấm đụng `0_contracts/` (G0-03) — contract hiện tại đủ.
 - Test unit tại `tests/unit/2_platform_adapters/` qua fake-browser — 0 dependency mới.
 - **Không** viết logic nghiệp vụ Phase 4+ (modules), không build adapter ngoài 4 domain trên.
+
+## GO — Phase 4: Layer 3 Pure Modules & Unit Testing
+
+**GO — MVP khả thi để triển khai Giai đoạn 4** (chủ dự án: vuthuonghai-steve, duyệt 2026-08-06 theo `Docs/Setups/phase-4-setup-plan.md` §3 D1–D3):
+
+- **Phạm vi (D1)**: 3 `sub-modules/` — `time-formatter/`, `dom-parser/`, `ai-stream-decoder/` (1 hàm chính mỗi module + test co-located). Defer sub-module khác tới phase có consumer thật.
+- **Composite mẫu (D2)**: `composite-modules/bookmark-manager/` — `index.ts` + `use-cases/save-bookmark.ts` + `delete-bookmark.ts` + `bookmark-manager.test.ts`. Storage I/O **qua interface do module tự định nghĩa** (depcruise ARC-1 chặn import Layer 2) — adapter thật lắp ở Phase 5.
+- **Coverage (TST-1)**: `vitest.config.ts` include `src/3_modules/**` + threshold **90% lines**; CI job `test` chạy `vitest run --coverage`.
+- **Cấm**: import `chrome`/`document`/`window` trong `3_modules/` (G1-06 deny); import `1_engine/`/`2_platform_adapters/`/`4_presentation/` (ARC-1). Test co-located `*.test.ts` cạnh mã nguồn theo cây §4.
+- **Không** thêm action/type mới vào `0_contracts/` (G0-03 — Bookmark type inline trong module, YAGNI).
 
 ## Fail criteria (thoát sớm)
 
