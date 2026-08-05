@@ -24,6 +24,11 @@
             "type": "command",
             "command": "python3 .agent/hooks/scripts/pre_tool_use/gate_arch_boundary.py",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "python3 .agent/hooks/scripts/pre_tool_use/gate_test_in_src.py",
+            "timeout": 10
           }
         ]
       },

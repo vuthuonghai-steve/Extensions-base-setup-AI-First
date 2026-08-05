@@ -20,6 +20,10 @@ viability:
 test_bypass:
   patterns:
     ['--no-verify', '--skip-', "\\[skip ci\\]", "describe\\.only", "it\\.only", "test\\.skip"]
+test_placement:
+  # G1-09 — cấm file test trong src/; test bắt buộc nằm trong tests/ (Architect §4)
+  scan_paths: ['src/']
+  tests_root: 'tests/unit/'
 arch_boundary:
   console_log_regex: "console\\.(log|debug|warn)"
   logger_file: 'telemetry/logger.ts'
