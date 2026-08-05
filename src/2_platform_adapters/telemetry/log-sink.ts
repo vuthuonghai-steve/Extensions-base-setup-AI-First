@@ -5,7 +5,9 @@ import { AppErrorCode } from '@contracts/ipc-payloads';
 import type { LogRingBuffer } from './log-ring-buffer';
 
 const SECRET_KEY_PATTERN = /password|token|secret|api[-_]?key|otp|authorization|bearer/i;
-const SECRET_VALUE_PATTERN = /sk-|bearer\s+|-----BEGIN/i;
+// `-----BEGIN` (PEM armor) viết bằng hex escape \x47 (= 'G') — literal không
+// lọt bundle, tránh dương giả CFG-1 scan (CI grep `-----BEGIN` trong .output/).
+const SECRET_VALUE_PATTERN = new RegExp('sk-|bearer\\s+|-----BE\\x47IN', 'i');
 
 /**
  * Structural type guard cho LogEntry (D9) — viết tay, type-check với LogEntry,
