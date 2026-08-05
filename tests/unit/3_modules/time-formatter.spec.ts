@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDate, formatRelativeTime } from './index';
+import { formatDate, formatRelativeTime } from '@modules/sub-modules/time-formatter/index';
 
 describe('time-formatter', () => {
   it('formatDate: ISO hợp lệ → locale string', () => {

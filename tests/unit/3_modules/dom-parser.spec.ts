@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parsePageMetadata } from './index';
+import { parsePageMetadata } from '@modules/sub-modules/dom-parser/index';
 
 const SAMPLE_HTML =
   '<html><head>' +

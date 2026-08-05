@@ -9,7 +9,7 @@
 | `pnpm typecheck` | ✅ PASS | `tsc --noEmit` — 0 lỗi (strict) |
 | `pnpm lint` | ✅ PASS | ESLint — 0 lỗi (fix `require-await` trên mock store test) |
 | `pnpm test` | ✅ PASS | Vitest **136/136** (19 files — 4 file `3_modules/` mới: 23 tests) |
-| `pnpm test --coverage` | ✅ PASS | **TST-1: Lines 96.34% (79/82) ≥ 90%** · Functions 100% · Statements 91.66% · Branches 86.66% ≥ 80% — chỉ tính `src/3_modules/**` |
+| `pnpm test --coverage` | ✅ PASS | **TST-1: Lines 96.34% (79/82) ≥ 90%** · Functions 100% · Statements 91.66% · Branches 87.5% ≥ 80% — chỉ tính `src/3_modules/**` (sau PR #6: test files ra khỏi src → coverage chỉ đo source thuần, branches 86.66→87.5) |
 | `pnpm build` | ✅ PASS | WXT build `.output/chrome-mv3` xanh |
 | `pnpm arc1` | ✅ PASS | depcruise 0 vi phạm (160 modules, 337 dependencies — ARC-1: 3_modules không import Layer 2) |
 | `pnpm format:check` | ✅ PASS | Prettier 100% clean |
@@ -28,6 +28,8 @@
 - `new URL` lowercase host nhưng giữ case path (đúng chuẩn URL) → test expectation sửa theo.
 - Prettier reformat 2 file module sau `pnpm format`.
 - Dependency mới: `@vitest/coverage-v8@4.1.10` (devDep, cùng version Vitest 4.1.10 — vitest 4 không kèm coverage provider).
+
+**Fix pattern sau review (PR #6 — test placement):** testing-and-verification.md §3 cũ ghi "co-located trong `3_modules/`" mâu thuẫn Architect §4 tree (`tests/unit/3_modules/`) — không gate nào enforce vị trí test nên cả 2 pattern cùng pass. Đã move 4 spec sang `tests/unit/3_modules/` (import qua `@modules`), sửa rule §3, coverage giờ đo source thuần.
 
 **Việc tiếp theo Phase 5+:** lắp adapter `BookmarkStore` thật (storage Layer 2) khi build Engine — use-cases không đổi; feature thật (dom-parse save, AI stream) chỉ cần thêm use-case dùng 3 sub-modules.
 
