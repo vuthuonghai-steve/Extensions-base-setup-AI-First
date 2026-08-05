@@ -55,13 +55,12 @@ jobs:
           fi
           echo "CFG-1 PASS — 0 match secret trong .output/"
 
-  # E2E (TST-2, OBS-3) — test chưa tồn tại (tests/e2e/ rỗng, chưa có
-  # playwright.config.ts), chạy khi nội dung e2e được thêm.
+  # E2E (TST-2, OBS-3) — chạy trên extension build thật (Phase 6, 2026-08-06).
+  # E2E local đã xanh 2 lần liên tục trước khi bật (bằng chứng không flaky).
   e2e:
     needs: quality
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    if: false # bật khi tests/e2e/ có test thật
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -73,7 +72,7 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: Install Playwright chromium
+      - name: Install Playwright chromium (channel chromium — headless shell không hỗ trợ extension)
         run: npx playwright install --with-deps chromium
       - name: Build extension
         run: pnpm build
