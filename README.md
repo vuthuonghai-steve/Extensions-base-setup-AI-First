@@ -2,16 +2,16 @@
 
 > Template để khởi động **bất kỳ** Chrome Extension nào — tích hợp sẵn kiến trúc 5 layer, logging tập trung, CI gates, và đặc biệt: **một AI Agent Layer để AI code đúng chuẩn dự án ngay từ đầu, không cần bạn ngồi review từng dòng.**
 
-| | |
-|---|---|
-| **Nền tảng** | Chrome Extension Manifest V3 (MV3) |
-| **Framework** | WXT + Vite + React 19 |
-| **Ngôn ngữ** | TypeScript strict mode |
-| **Quản lý package** | pnpm |
-| **Kiến trúc** | 5 layer phân lớp (`0_contracts` → `4_presentation`) |
-| **Testing** | Vitest (unit/contract) + Playwright (E2E trên extension thật) |
-| **CI** | GitHub Actions — tự động hóa gates trước khi merge |
-| **AI-First** | `.agent/` — hook scripts, rules, skills cho AI agent |
+|                     |                                                               |
+| ------------------- | ------------------------------------------------------------- |
+| **Nền tảng**        | Chrome Extension Manifest V3 (MV3)                            |
+| **Framework**       | WXT + Vite + React 19                                         |
+| **Ngôn ngữ**        | TypeScript strict mode                                        |
+| **Quản lý package** | pnpm                                                          |
+| **Kiến trúc**       | 5 layer phân lớp (`0_contracts` → `4_presentation`)           |
+| **Testing**         | Vitest (unit/contract) + Playwright (E2E trên extension thật) |
+| **CI**              | GitHub Actions — tự động hóa gates trước khi merge            |
+| **AI-First**        | `.agent/` — hook scripts, rules, skills cho AI agent          |
 
 ---
 
@@ -26,14 +26,14 @@ Repo này giải quyết bằng **AI Agent Layer**: toàn bộ quy chuẩn kiế
 
 **So sánh nhanh:**
 
-| Khía cạnh | Repo extension thường | Repo này |
-|---|---|---|
-| Kiến trúc | Tùy dev, dễ vỡ cấu trúc | 5 layer cứng, enforce bằng hook + dependency-cruiser |
-| Rule cho AI | Viết lời nhắc trong README | **Hook scripts block ngay lúc write file** |
-| Log | Console.log rải rác | Centralized logging, có `traceId`, Ring Buffer & Debug Console |
-| State | Để ở SW memory → mất khi SW bị kill | Persist ra `chrome.storage`, test kỹ kịch bản SW restart |
-| Testing & CI | "Chạy được là xong" | Pipeline gates: typecheck → lint → test → build → secret scan → E2E |
-| AI dev feature | Code xong mới sửa, hên xui | Quy trình 5 bước + tự verify bằng chứng trước khi hoàn tất |
+| Khía cạnh      | Repo extension thường               | Repo này                                                            |
+| -------------- | ----------------------------------- | ------------------------------------------------------------------- |
+| Kiến trúc      | Tùy dev, dễ vỡ cấu trúc             | 5 layer cứng, enforce bằng hook + dependency-cruiser                |
+| Rule cho AI    | Viết lời nhắc trong README          | **Hook scripts block ngay lúc write file**                          |
+| Log            | Console.log rải rác                 | Centralized logging, có `traceId`, Ring Buffer & Debug Console      |
+| State          | Để ở SW memory → mất khi SW bị kill | Persist ra `chrome.storage`, test kỹ kịch bản SW restart            |
+| Testing & CI   | "Chạy được là xong"                 | Pipeline gates: typecheck → lint → test → build → secret scan → E2E |
+| AI dev feature | Code xong mới sửa, hên xui          | Quy trình 5 bước + tự verify bằng chứng trước khi hoàn tất          |
 
 ---
 
@@ -89,14 +89,14 @@ Extensions/
 
 ### Tech Stack
 
-| Thành phần | Công nghệ | Vai trò & Lý do |
-|---|---|---|
-| Framework | WXT 0.21 + Vite 8 | Dev-server HMR mượt mà, build chuẩn MV3, quản lý entrypoint gọn |
-| UI Layer | React 19 + `@wxt-dev/module-react` | Tái sử dụng component linh hoạt cho popup, sidepanel, options |
-| Language | TypeScript 6 strict | Ép type strict, yêu cầu `traceId` ngay ở **type level** |
-| Validation | Zod 4 | Validate `.env` ngay khi build — báo lỗi ngay nếu thiếu biến môi trường |
-| Testing | Vitest 4 + Playwright 1.62 | Vitest test unit/contract ở Layer 2–4; Playwright test E2E & SW lifecycle |
-| Code Architecture | dependency-cruiser | Chống import ngược chiều giữa các layer |
+| Thành phần        | Công nghệ                          | Vai trò & Lý do                                                           |
+| ----------------- | ---------------------------------- | ------------------------------------------------------------------------- |
+| Framework         | WXT 0.21 + Vite 8                  | Dev-server HMR mượt mà, build chuẩn MV3, quản lý entrypoint gọn           |
+| UI Layer          | React 19 + `@wxt-dev/module-react` | Tái sử dụng component linh hoạt cho popup, sidepanel, options             |
+| Language          | TypeScript 6 strict                | Ép type strict, yêu cầu `traceId` ngay ở **type level**                   |
+| Validation        | Zod 4                              | Validate `.env` ngay khi build — báo lỗi ngay nếu thiếu biến môi trường   |
+| Testing           | Vitest 4 + Playwright 1.62         | Vitest test unit/contract ở Layer 2–4; Playwright test E2E & SW lifecycle |
+| Code Architecture | dependency-cruiser                 | Chống import ngược chiều giữa các layer                                   |
 
 ### Các quyết định thiết kế quan trọng
 
@@ -117,21 +117,21 @@ Extensions/
 
 Mỗi rule trong dự án có trạng thái enforce rõ ràng (✅ Tự động kiểm tra / ⚠️ Rule mềm / ℹ️ Tài liệu tham khảo). Các rule ✅ được thực thi qua **~15 hook scripts** khai báo trong `.agent/hooks.json`:
 
-| Event | Gate script | Chức năng kiểm tra |
-|---|---|---|
-| **PreToolUse** (trước khi write file) | `gate_contract_lock` (G0-03) | Yêu cầu xác nhận khi sửa file trong `0_contracts/` |
-| | `gate_viability` (G0-04) | Chặn viết code khi chưa có thiết kế/spec |
-| | `gate_arch_boundary` (G1-06) | Chặn import ngược layer, dùng `chrome.*` trong `3_modules/`, bare console log, gửi message ngoài bridge |
-| | `gate_test_in_src` (G1-09) | Chặn đặt file test inside `src/` |
-| | `gate_test_bypass` (G0-05) | Chặn dùng `--no-verify` hay skip test để bypass gate |
-| | G0-01 (chống hardcode) | Chặn hardcode giá trị tạm thay cho biến môi trường |
-| **PostToolUse** (sau khi write file) | `gate_traceid` (G1-07) | Bắt buộc `traceId` trong hợp đồng IPC |
-| | `gate_secret_scan` (G1-08) | Quét API key/secret lọt vào thư mục `dist/` |
-| **Stop** (kết thúc phiên) | G0-02 (scan repo) | Kiểm tra toàn bộ repo không còn code tạm/hardcode |
-| | `gate_stop_verify` (G0-06) | Chặn kết thúc phiên khi code mới chưa qua test/verify |
-| | `gate_doc_structure` (G1-01/G1-03) | Kiểm tra cấu trúc tài liệu thiết kế |
-| | `gate_evidence` (G2-03) | Yêu cầu bằng chứng test/log khi báo hoàn thành |
-| **PreInvocation** | `remind_domain_anchor` (G1-05) | Nhắc nhở AI xác định đúng context trước khi thực thi |
+| Event                                 | Gate script                        | Chức năng kiểm tra                                                                                      |
+| ------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **PreToolUse** (trước khi write file) | `gate_contract_lock` (G0-03)       | Yêu cầu xác nhận khi sửa file trong `0_contracts/`                                                      |
+|                                       | `gate_viability` (G0-04)           | Chặn viết code khi chưa có thiết kế/spec                                                                |
+|                                       | `gate_arch_boundary` (G1-06)       | Chặn import ngược layer, dùng `chrome.*` trong `3_modules/`, bare console log, gửi message ngoài bridge |
+|                                       | `gate_test_in_src` (G1-09)         | Chặn đặt file test inside `src/`                                                                        |
+|                                       | `gate_test_bypass` (G0-05)         | Chặn dùng `--no-verify` hay skip test để bypass gate                                                    |
+|                                       | G0-01 (chống hardcode)             | Chặn hardcode giá trị tạm thay cho biến môi trường                                                      |
+| **PostToolUse** (sau khi write file)  | `gate_traceid` (G1-07)             | Bắt buộc `traceId` trong hợp đồng IPC                                                                   |
+|                                       | `gate_secret_scan` (G1-08)         | Quét API key/secret lọt vào thư mục `dist/`                                                             |
+| **Stop** (kết thúc phiên)             | G0-02 (scan repo)                  | Kiểm tra toàn bộ repo không còn code tạm/hardcode                                                       |
+|                                       | `gate_stop_verify` (G0-06)         | Chặn kết thúc phiên khi code mới chưa qua test/verify                                                   |
+|                                       | `gate_doc_structure` (G1-01/G1-03) | Kiểm tra cấu trúc tài liệu thiết kế                                                                     |
+|                                       | `gate_evidence` (G2-03)            | Yêu cầu bằng chứng test/log khi báo hoàn thành                                                          |
+| **PreInvocation**                     | `remind_domain_anchor` (G1-05)     | Nhắc nhở AI xác định đúng context trước khi thực thi                                                    |
 
 > 🔥 **Lợi ích:** Các hooks này kích hoạt tự động khi AI (Claude Code) thao tác file — nếu vi phạm sẽ **bị chặn hoặc yêu cầu xác nhận ngay lập tức**, giúp code luôn chuẩn mà không tốn công theo dõi.
 
@@ -139,19 +139,19 @@ Mỗi rule trong dự án có trạng thái enforce rõ ràng (✅ Tự động 
 
 `.agent/rules/` — nguồn sự thật cho agent, mỗi file ghi rõ mục nào đã thành hook, mục nào là quy ước:
 
-| Rule | Nội dung chính |
-|---|---|
-| `architecture-and-flow.md` | Kiến trúc 5 tầng, ma trận execution context, luồng IPC |
-| `wxt-extension-architecture.md` | Engine chỉ Register & Listen, Content Worlds, IPC pattern |
-| `tech-stack-and-conventions.md` | Stack, path aliases `@contracts/@engine/...`, naming, coding practices |
-| `code-quality-and-gates.md` | Bảng Binary Gates chính thức (OBS/CFG/TST/ARC...) và trạng thái enforce |
-| `config-and-environment.md` | Bảng 4 loại config, nơi lưu đúng, cấm secret trong bundle |
-| `database-and-indexeddb-storage.md` | 3 storage drivers, session-cache, ring buffer, quota/evict |
-| `logging-and-observability.md` | LogEntry 7 trường, Log Sink pipeline, self-debugging |
-| `testing-and-verification.md` | Testing Pyramid, Playwright MV3 kỹ thuật, thứ tự gate |
-| `ui-architecture-conventions.md` | Shadow DOM, ADR-001/007, tổ chức feature |
-| `context-routing-and-modularity.md` | Load tài liệu khi cần, chống tràn context |
-| `llm-core-principles.md` | 5 nguyên lý tư duy, negative space, reverse probing, quy trình 5 bước |
+| Rule                                | Nội dung chính                                                          |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| `architecture-and-flow.md`          | Kiến trúc 5 tầng, ma trận execution context, luồng IPC                  |
+| `wxt-extension-architecture.md`     | Engine chỉ Register & Listen, Content Worlds, IPC pattern               |
+| `tech-stack-and-conventions.md`     | Stack, path aliases `@contracts/@engine/...`, naming, coding practices  |
+| `code-quality-and-gates.md`         | Bảng Binary Gates chính thức (OBS/CFG/TST/ARC...) và trạng thái enforce |
+| `config-and-environment.md`         | Bảng 4 loại config, nơi lưu đúng, cấm secret trong bundle               |
+| `database-and-indexeddb-storage.md` | 3 storage drivers, session-cache, ring buffer, quota/evict              |
+| `logging-and-observability.md`      | LogEntry 7 trường, Log Sink pipeline, self-debugging                    |
+| `testing-and-verification.md`       | Testing Pyramid, Playwright MV3 kỹ thuật, thứ tự gate                   |
+| `ui-architecture-conventions.md`    | Shadow DOM, ADR-001/007, tổ chức feature                                |
+| `context-routing-and-modularity.md` | Load tài liệu khi cần, chống tràn context                               |
+| `llm-core-principles.md`            | 5 nguyên lý tư duy, negative space, reverse probing, quy trình 5 bước   |
 
 ### Skills cho agent
 
