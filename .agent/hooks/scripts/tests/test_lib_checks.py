@@ -162,6 +162,22 @@ def test_scan_arch_post_message_allowed_in_bridge():
     findings = scan_arch(content, "src/main-world-bridge.ts", _arch_rules())
     assert all(f["kind"] != "post_message" for f in findings)
 
+def test_scan_arch_post_message_allowed_on_exclude_path():
+    content = "port.postMessage(data);\n"
+    rules = _arch_rules(
+        post_message_exclude_paths=["2_platform_adapters/ipc/port-channel.ts"]
+    )
+    findings = scan_arch(content, "src/2_platform_adapters/ipc/port-channel.ts", rules)
+    assert all(f["kind"] != "post_message" for f in findings)
+
+def test_scan_arch_post_message_blocked_outside_exclude_path():
+    content = "port.postMessage(data);\n"
+    rules = _arch_rules(
+        post_message_exclude_paths=["2_platform_adapters/ipc/port-channel.ts"]
+    )
+    findings = scan_arch(content, "src/other/foo.ts", rules)
+    assert any(f["kind"] == "post_message" for f in findings)
+
 
 def test_scan_arch_forbidden_import():
     content = "import { x } from '1_engine/foo';\n"

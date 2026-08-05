@@ -28,6 +28,10 @@ arch_boundary:
   dom_regex: "\\b(document|window)\\."
   post_message_regex: 'postMessage'
   bridge_file: 'main-world-bridge.ts'
+  # Ngoai le path: runtime Port API trong ipc/port-channel.ts — ARC-3 chi cam
+  # window.post_message rai rac giua Isolated <-> Main World, khong phai Port.
+  post_message_exclude_paths:
+    ['2_platform_adapters/ipc/port-channel.ts', '2_platform_adapters/telemetry/log-broadcaster.ts', 'tests/unit/2_platform_adapters/port-channel.spec.ts', 'tests/unit/2_platform_adapters/log-broadcaster.spec.ts', 'tests/unit/2_platform_adapters/infrastructure-handlers.spec.ts']
   forbidden_imports:
     '3_modules/': ['from [''"].*1_engine/', 'from [''"].*2_platform_adapters/']
     '1_engine/': ['from [''"].*3_modules/', 'from [''"].*4_presentation/']
