@@ -1,0 +1,77 @@
+placeholder:
+  patterns: ['TODO', 'FIXME', 'XXX', 'lorem ipsum', 'mock data', 'placeholder']
+  exclude_paths:
+    [
+      '**/test*/**',
+      '**/fixtures/**',
+      '**/*.test.*',
+      '**/tests/**',
+      '**/node_modules/**',
+      '**/dist/**',
+    ]
+  scan_paths: ['src/']
+contract_lock:
+  protected_dirs: ['0_contracts/']
+viability:
+  gate_doc: 'docs/decisions/viability-gate.md'
+  go_marker: 'GO'
+  protected_code_paths:
+    ['src/', '1_engine/', '2_platform_adapters/', '3_modules/', '4_presentation/']
+test_bypass:
+  patterns:
+    ['--no-verify', '--skip-', "\\[skip ci\\]", "describe\\.only", "it\\.only", "test\\.skip"]
+test_placement:
+  # G1-09 — cấm file test trong src/; test bắt buộc nằm trong tests/ (Architect §4)
+  scan_paths: ['src/']
+  tests_root: 'tests/unit/'
+arch_boundary:
+  console_log_regex: "console\\.(log|debug|warn)"
+  logger_file: 'telemetry/logger.ts'
+  ts_ignore: ['as any', '@ts-ignore', '@ts-expect-error']
+  chrome_regex: "chrome\\.[a-zA-Z]"
+  dom_regex: "\\b(document|window)\\."
+  post_message_regex: 'postMessage'
+  bridge_file: 'main-world-bridge.ts'
+  # Ngoai le path: runtime Port API trong ipc/port-channel.ts — ARC-3 chi cam
+  # window.post_message rai rac giua Isolated <-> Main World, khong phai Port.
+  post_message_exclude_paths:
+    ['2_platform_adapters/ipc/port-channel.ts', '2_platform_adapters/telemetry/log-broadcaster.ts', 'tests/unit/2_platform_adapters/port-channel.spec.ts', 'tests/unit/2_platform_adapters/log-broadcaster.spec.ts', 'tests/unit/2_platform_adapters/infrastructure-handlers.spec.ts']
+  forbidden_imports:
+    '3_modules/': ['from [''"].*1_engine/', 'from [''"].*2_platform_adapters/']
+    '1_engine/': ['from [''"].*3_modules/', 'from [''"].*4_presentation/']
+doc_structure:
+  negative_space_min_items: 5
+  negative_space_consequence_keywords: ['hậu quả', 'consequence']
+  moscow_must_have_max: 5
+  glossary_min_terms: 10
+  persona_min: 3
+  failure_reasons_min: 5
+  negative_space_path: 'docs/negative-space.md'
+  moscow_path: 'docs/scope.md'
+  anchor_doc_paths: ['docs/domain-anchor.md', 'Docs/domain-anchor.md', 'docs/anchor.md']
+  adr_dir: 'docs/decisions/adr'
+evidence:
+  deploy_patterns: ['deploy', 'staging', '--load-extension', 'vercel', 'chrome://extensions']
+  usability_report_path: 'docs/validation-report.md'
+  usability_min_percent: 80
+  monitoring_patterns: ['sentry', 'alert', 'monitoring', 'datadog']
+  legal_keywords: ['human-reviewed', 'human approved', 'đã duyệt']
+  activation_doc: 'docs/decisions/viability-gate.md'
+  activation_marker: 'GO'
+traceid:
+  target_file: '0_contracts/ipc-payloads.ts'
+  optional_regex: "traceId\\s*\\?"
+  required_regex: "traceId\\s*:"
+secret:
+  patterns:
+    [
+      'sk-[A-Za-z0-9]{10,}',
+      'AIza[0-9A-Za-z_-]{10,}',
+      'ghp_[A-Za-z0-9]{20,}',
+      '-----BEGIN',
+      'sk-ant-',
+    ]
+  scan_paths: ['dist/']
+  build_cmd_patterns: ['wxt build', 'vite build', 'npm run build', 'pnpm build']
+reminder:
+  anchor_doc_paths: ['docs/domain-anchor.md', 'Docs/domain-anchor.md', 'docs/anchor.md']
