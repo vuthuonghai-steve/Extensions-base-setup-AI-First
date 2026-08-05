@@ -30,9 +30,9 @@ Dựng toàn bộ **Layer 3 — Pure Modules** trong `src/3_modules/`: 3 sub-mod
 
 | # | Quyết định | Lý do (ràng buộc) |
 |---|---|---|
-| **D1** | Phạm vi 3 `sub-modules/` đúng tên Architect §4: `time-formatter` (formatDate/formatRelativeTime — invalid → Result.err), `dom-parser` (parsePageMetadata từ **string HTML** — title/canonical URL/textLength, **không đụng DOM API**), `ai-stream-decoder` (decodeSseChunk — `data:` lines → chunks JSON, `[DONE]` sentinel, malformed skip+đếm) | Mỗi module 1 hàm chính + test co-located; nền test-able cho feature thật sau (dom-parse save, AI stream) |
+| **D1** | Phạm vi 3 `sub-modules/` đúng tên Architect §4: `time-formatter` (formatDate/formatRelativeTime — invalid → Result.err), `dom-parser` (parsePageMetadata từ **string HTML** — title/canonical URL/textLength, **không đụng DOM API**), `ai-stream-decoder` (decodeSseChunk — `data:` lines → chunks JSON, `[DONE]` sentinel, malformed skip+đếm) | Mỗi module 1 hàm chính + test **tại `tests/unit/3_modules/`** (fix: không co-located trong src — xem §8) |
 | **D2** | Composite mẫu `bookmark-manager`: `index.ts` (type `Bookmark` + interface `BookmarkStore` + `BookmarkResult<T>`) + `use-cases/bookmark-actions.ts` (`saveBookmark`/`deleteBookmark`/`normalizeUrl` — validate URL http/https, dedupe normalized, lỗi code `INVALID_URL`/`DUPLICATE`/`NOT_FOUND`/`STORE_FAILURE`) + `bookmark-manager.test.ts` (10 tests, in-memory store đóng vai adapter Layer 2) | Đúng mẫu chuẩn Architect §4; chứng minh composite pattern + TST-1 mà không cần feature thật. **Storage I/O qua interface `BookmarkStore`** — ARC-1 chặn import Layer 2, adapter thật lắp Phase 5 |
-| **D3** | Test **co-located** `*.test.ts` cạnh mã nguồn (cây §4) | Vitest config sẵn phủ cả `tests/` lẫn `src/3_modules/` — không cần file cấu hình mới |
+| **D3** | Test tại `tests/unit/3_modules/` theo cây §4 (import qua alias `@modules`) | Rule cũ ghi "co-located" mâu thuẫn tree §4 → thống nhất 1 pattern; test ở src bị instrument vào coverage làm bóp méo % |
 | **D4** | Coverage TST-1: `vitest.config.ts` — `coverage.include: ['src/3_modules/**']`, threshold **lines/functions/statements 90%**, branches 80%, reporter text + text-summary; CI job test → `pnpm test -- --coverage` | §11 TST-1 pass = coverage report đạt ngưỡng đã thống nhất trên `3_modules/`; ngưỡng 90% lines do chủ dự án chốt (Q2) |
 | **D5** | Dependency mới `@vitest/coverage-v8@4.1.10` (devDep) | Vitest 4 không kèm coverage provider; phiên bản khớp Vitest 4.1.10 |
 
@@ -67,6 +67,11 @@ Dựng toàn bộ **Layer 3 — Pure Modules** trong `src/3_modules/`: 3 sub-mod
 ## 6. Bằng chứng (binary gates)
 
 Xem `docs/validation-report.md` mục "Kết quả cơ học Giai đoạn 4" — typecheck/lint/format/test 136/136/coverage 96.34% lines/build/arc1 đều PASS.
+
+## 8. Fix pattern sau review (PR #6 — test placement)
+
+- **Vấn đề**: testing-and-verification.md §3 cũ ghi "Test co-located trong `3_modules/`" nhưng Architect-workspace.md §4 tree ghi `tests/unit/3_modules/` — 2 nguồn mâu thuẫn, không gate nào enforce vị trí test (Vitest quét cả 2 chỗ, coverage `include: ['src/3_modules/**']` instrument cả file test trong src → bóp méo %).
+- **Fix**: move 4 spec sang `tests/unit/3_modules/` (`*.spec.ts`, import qua `@modules`); cập nhật testing-and-verification.md §3 bỏ co-located; coverage giờ chỉ đo source thuần (branches 86.66→87.5%, không đổi lines 96.34%).
 
 ## 7. Skipped (YAGNI — Zero-Artifact)
 

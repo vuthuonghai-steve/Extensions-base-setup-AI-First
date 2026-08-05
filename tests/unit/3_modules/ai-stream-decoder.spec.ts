@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DONE_SENTINEL, decodeSseChunk } from './index';
+import { DONE_SENTINEL, decodeSseChunk } from '@modules/sub-modules/ai-stream-decoder/index';
 
 describe('ai-stream-decoder', () => {
   it('decodeSseChunk: data lines hợp lệ → chunks JSON, done=false', () => {

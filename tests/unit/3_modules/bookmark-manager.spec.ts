@@ -4,8 +4,12 @@ import {
   deleteBookmark,
   normalizeUrl,
   saveBookmark,
-} from './use-cases/bookmark-actions';
-import type { Bookmark, BookmarkResult, BookmarkStore } from './index';
+} from '@modules/composite-modules/bookmark-manager/use-cases/bookmark-actions';
+import type {
+  Bookmark,
+  BookmarkResult,
+  BookmarkStore,
+} from '@modules/composite-modules/bookmark-manager/index';
 
 const NOW = '2026-08-06T12:00:00.000Z';
 
