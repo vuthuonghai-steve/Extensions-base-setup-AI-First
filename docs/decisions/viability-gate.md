@@ -1,4 +1,4 @@
-# MVP Viability Gate — Phases 1–4: Infrastructure, Contracts, Adapters & Layer 3 Modules
+# MVP Viability Gate — Phases 1–5: Infrastructure, Contracts, Adapters, Layer 3 & Engine/Presentation
 
 > Quyết định Stage 4 (Human-only) — chủ dự án duyệt, 2026-08-05. Chốt theo
 > `Docs/Setups/phase-1-setup-plan.md` §10 (Q1–Q4).
@@ -36,6 +36,18 @@
 - **Coverage (TST-1)**: `vitest.config.ts` include `src/3_modules/**` + threshold **90% lines**; CI job `test` chạy `vitest run --coverage`.
 - **Cấm**: import `chrome`/`document`/`window` trong `3_modules/` (G1-06 deny); import `1_engine/`/`2_platform_adapters/`/`4_presentation/` (ARC-1). Test co-located `*.test.ts` cạnh mã nguồn theo cây §4.
 - **Không** thêm action/type mới vào `0_contracts/` (G0-03 — Bookmark type inline trong module, YAGNI).
+
+## GO — Phase 5: Layer 1 Engine Entrypoints & Layer 4 Presentation
+
+**GO — MVP khả thi để triển khai Giai đoạn 5** (chủ dự án: vuthuonghai-steve, duyệt 2026-08-06 theo `Docs/Setups/phase-5-setup-plan.md` §3 D1–D13, §4 R1–R8):
+
+- **Phạm vi (D1, D7–D11)**: `1_engine/background/` bootstrap thật (Router instance duy nhất + `registerInfrastructureHandlers` + `registerMessageListener` + lifecycle alarm keep-alive 0.5min ghi `session.sw_active_timestamp` qua `session-cache.ts`); `1_engine/ui-pages/` 4 entrypoint HTML (popup/sidepanel/options/debug-console) import React app từ `@presentation`; manifest permissions `storage`+`alarms`+`sidePanel` (D11 — verify WXT tự sinh side_panel/options_ui, thiếu thì khai function-form).
+- **Scaffold phi-entrypoint (D5, D6)**: `content/isolated-world/dom-bridge.ts` + `main-world-bridge.ts` + `content/main-world/page-context-hook.ts` (export stub); `offscreen/handlers/dom-parse-handler.ts` (pure fn). **Entrypoint content/offscreen `index.ts` DEFER Phase 6** (matches thật — Chrome bắt buộc non-empty, khai rỗng = manifest invalid).
+- **Presentation (D8–D10)**: `popup-app` = settings showcase (ADR-007 — view thuần, React state chỉ mirror storage, fetch SettingsGet khi mount, toggle ghi SettingsSet qua IPC); `debug-console-app` = LogViewer (port `telemetry.broadcast` tail + filter scope/level/traceId) + StorageInspector (IPC StorageInspect) + `export-logs.ts` (Blob JSON, không gọi console — OBS-1); `sidepanel-app` = menu tĩnh thuần presentation.
+- **Defer (D4, D12)**: `tabs-listener`/`context-menu-listener` (cần `contextMenus` permission — khi có feature thật); `shared-design-system/`/`shadow-dom/`/`main-world-ui/` (0 consumer phase này); `options-app` (tree không liệt kê — options = shell tĩnh).
+- **Cấm (G0-03)**: thêm action/type mới vào `0_contracts/` — 4 action hiện có (LogSink/SettingsGet/SettingsSet/StorageInspect) đủ.
+- **Test (D13, TST-1)**: `tests/unit/1_engine/` (keep-alive schedule logic, session-cache đổ/rehydrate qua mock, message-listener route) + `tests/unit/4_presentation/` (export-logs JSON shape, LogViewer filter) — **test trong `tests/`, không co-located `src/`** (G1-09).
+- **Verify cuối**: `pnpm typecheck && pnpm lint && pnpm format:check && pnpm test -- --coverage && pnpm build && pnpm arc1` xanh + `.output/chrome-mv3/manifest.json` có action/side_panel/options_ui + secret scan 0 match (CFG-1).
 
 ## Fail criteria (thoát sớm)
 
