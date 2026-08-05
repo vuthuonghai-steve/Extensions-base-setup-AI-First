@@ -1,5 +1,6 @@
 import type { IpcAction } from './ipc-actions';
 import type { LogEntry } from './log-schema';
+import type { StorageArea, StorageKey } from './storage-schema';
 
 /**
  * Standard Error Codes for AppError discriminated union.
@@ -38,27 +39,23 @@ export interface BaseIpcRequest {
 
 export interface LogSinkRequest extends BaseIpcRequest {
   action: IpcAction.LogSink;
-  traceId: string;
   entry: LogEntry;
 }
 
 export interface SettingsGetRequest extends BaseIpcRequest {
   action: IpcAction.SettingsGet;
-  traceId: string;
-  key?: string;
+  key?: StorageKey;
 }
 
 export interface SettingsSetRequest extends BaseIpcRequest {
   action: IpcAction.SettingsSet;
-  traceId: string;
-  key: string;
+  key: StorageKey;
   value: unknown;
 }
 
 export interface StorageInspectRequest extends BaseIpcRequest {
   action: IpcAction.StorageInspect;
-  traceId: string;
-  area?: 'local' | 'session' | 'sync';
+  area?: StorageArea;
 }
 
 /**
@@ -69,11 +66,13 @@ export type IpcRequestPayload =
 
 export type LogSinkResponseData = { acknowledged: boolean };
 export type SettingsGetResponseData = { value: unknown };
-export type SettingsSetResponseData = { success: boolean };
+export type SettingsSetResponseData = void;
 export type StorageInspectResponseData = { data: Record<string, unknown> };
 
 /**
  * Type-level mapping between IpcAction and its expected MessageResponse payload.
+ * Nguồn sự thật cho Phase 3 router; shape được khóa bởi compile-time assert trong
+ * tests/contract/ipc-payload-shape.spec.ts.
  */
 export type IpcResponseMap = {
   [IpcAction.LogSink]: MessageResponse<LogSinkResponseData>;

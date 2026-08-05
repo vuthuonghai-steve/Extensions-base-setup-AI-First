@@ -3,6 +3,7 @@ import {
   AppErrorCode,
   IpcAction,
   LogLevel,
+  type IpcResponseMap,
   type LogEntry,
   type LogSinkRequest,
   type MessageResponse,
@@ -10,6 +11,39 @@ import {
   type SettingsSetRequest,
   type StorageInspectRequest,
 } from '../../src/0_contracts';
+
+/**
+ * Type-level lock OBS-2 (compile-time — chạy qua `tsc` trong BASE-0).
+ * Nếu `traceId` bị đổi thành optional hoặc xóa khỏi bất kỳ request nào,
+ * `_AssertTrue` nhận `false` → typecheck đỏ. Không dùng ts-ignore-style
+ * comment vì G1-06 chặn pattern đó (ts_ignore, áp dụng cả tests/).
+ */
+/**
+ * Type-level lock OBS-2 (compile-time — chạy qua `tsc` trong BASE-0).
+ * Nếu `traceId` bị đổi thành optional hoặc xóa khỏi bất kỳ request nào,
+ * `_RequireTraceId` nhận `false` → `_AssertTrue` fail → typecheck đỏ.
+ * Không dùng ts-ignore-style comment vì G1-06 chặn pattern đó.
+ */
+type _RequireTraceId<T> = T extends { traceId: string } ? true : false;
+type _AssertTrue<T extends true> = T;
+
+/** Mọi IpcAction phải có entry trong IpcResponseMap (định tuyến Phase 3). */
+type _ResponseMapCoversAll = _AssertTrue<IpcAction extends keyof IpcResponseMap ? true : false>;
+
+type _OBS2LogSink = _AssertTrue<_RequireTraceId<LogSinkRequest>>;
+type _OBS2SettingsGet = _AssertTrue<_RequireTraceId<SettingsGetRequest>>;
+type _OBS2SettingsSet = _AssertTrue<_RequireTraceId<SettingsSetRequest>>;
+type _OBS2StorageInspect = _AssertTrue<_RequireTraceId<StorageInspectRequest>>;
+
+// Giữ type alias "được dùng" qua reference ngầm — tránh no-unused-vars.
+type _AllLocks = [
+  _OBS2LogSink,
+  _OBS2SettingsGet,
+  _OBS2SettingsSet,
+  _OBS2StorageInspect,
+  _ResponseMapCoversAll,
+];
+void (null as unknown as _AllLocks);
 
 describe('IPC Payload & Contract Shape Specification (OBS-2)', () => {
   it('should maintain exact 4 infrastructure IpcActions', () => {

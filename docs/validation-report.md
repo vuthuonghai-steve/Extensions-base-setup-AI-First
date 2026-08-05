@@ -24,6 +24,13 @@
 
 **Mức hoàn thành Phase 2: 100%** — Layer 0 contracts hoàn chỉnh, độc lập, sẵn sàng cho Phase 3 (Adapters & Telemetry).
 
+**Fix theo code review (pre-merge):**
+- `key?: string` → `key?: StorageKey` (SettingsGet) và `key: StorageKey` (SettingsSet) — literal type từ `storage-schema.ts`, chống fail âm thầm khi key đổi area/rename.
+- `area?: 'local' | 'session' | 'sync'` → `StorageArea` (nguồn sự thật duy nhất tại storage-schema).
+- Bỏ redeclare `action`/`traceId` thừa trong 4 request interface (extends `BaseIpcRequest` đã đủ).
+- `SettingsSetResponseData { success: boolean }` → `void` — tránh 2 nguồn sự thật với envelope `ok`.
+- Test: thêm type-level lock OBS-2 (`_AssertTrue<_RequireTraceId<...>>`) — verified negative: đổi `traceId` optional → typecheck đỏ 4 errors; `_ResponseMapCoversAll` khóa IpcResponseMap phủ mọi IpcAction.
+
 ## Kết quả cơ học Giai đoạn 1 (Infrastructure & Base Configuration)
 
 | Kiểm tra | Kết quả | Chi tiết |

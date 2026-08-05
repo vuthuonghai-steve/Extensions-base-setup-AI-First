@@ -38,3 +38,8 @@ export interface StorageSyncSchema {
  */
 export type StorageKey =
   keyof StorageSessionSchema | keyof StorageLocalSchema | keyof StorageSyncSchema;
+
+/**
+ * Storage area names — nguồn sự thật duy nhất cho chrome.storage area literals.
+ */
+export type StorageArea = 'local' | 'session' | 'sync';
